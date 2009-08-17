@@ -6,6 +6,14 @@
 \begin{document}
 \title{Profiling a table layout using Grid}
 \author{Baptiste Auguié}
+
+\SweaveOpts{keep.source=TRUE, eps=FALSE} 
+\setkeys{Gin}{width=\textwidth}
+   
+<<foo,include=FALSE,echo=FALSE>>=
+options(width = 60)
+@
+	
 %\VignetteIndexEntry{timingTables}
 \maketitle
 
@@ -16,7 +24,7 @@
 library(grid)
 #library(profr)
 d <- head(iris)
-dlong <- iris # large dataset for final timing
+dlong <- head(iris,  20) # large dataset for final timing
 reps <- 5 # replicates of dlong for the first timing
 
 ## define some helping functions
@@ -302,44 +310,16 @@ d <- dlong
 content <- makeContent(d)
 content2 <- makeContentInVp(d)
 
-## pdf("test-timing-iris.pdf", height=45)
-## system.time(table1(content)) 
-## grid.newpage()
-## system.time(table2(content))
-## grid.newpage()
-## system.time(table3(content))
-## grid.newpage()
-## system.time(table4(content2))
-## dev.off()
+pdf("test-timing-iris.pdf", height=45)
+system.time(table1(content)) 
+grid.newpage()
+system.time(table2(content))
+grid.newpage()
+system.time(table3(content))
+grid.newpage()
+system.time(table4(content2))
+dev.off()
 
-## prof3 <- profr(table2(content))
-## prof4 <- profr(table3(content))
-## prof5 <- profr(table4(content2))
-
-## save(prof3, prof4, prof5, file="profiling.rda")
-
-## head(prof3)
-## head(prof4)
-## head(prof5)
-
-## Rprof("table1.out") 
-## grid.newpage()
-## table1(content)
-## Rprof("table2.out") 
-## grid.newpage()
-## table2(content)
-## Rprof("table3.out") 
-## grid.newpage()
-## table3(content)
-## Rprof("table4.out") 
-## grid.newpage()
-## table4(content2)
-## Rprof(NULL)
-
-## system("R CMD Rprof table1.out", int=T)
-## system("R CMD Rprof table2.out", int=T)
-## system("R CMD Rprof table3.out", int=T)
-## system("R CMD Rprof table4.out", int=T)
 @ 
 
 

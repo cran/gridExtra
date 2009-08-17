@@ -1,6 +1,6 @@
 \name{rpatternGrob}
 \alias{rpatternGrob}
-\title{arrange}
+\title{rpatternGrob}
 \usage{rpatternGrob(x=unit(0.5, "npc"), y=unit(0.5, "npc"), width=unit(1, "npc"),
     height=unit(1, "npc"), motif=matrix("white"), AR=1,
     motif.width=unit(5, "mm"), motif.height=AR * motif.width,

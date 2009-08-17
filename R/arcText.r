@@ -9,6 +9,7 @@
 ##' @param gp gpar
 ##' @param ... additional params (unused)
 ##' @return grob
+##' 
 ##' @examples
 ##' library(grid)
 ##' set.seed(1234)

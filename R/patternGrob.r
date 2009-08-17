@@ -18,6 +18,7 @@
 ##' @param gp gp 
 ##' @param ... additional params to the grob
 ##' @return grob of class pattern
+##' 
 ##' @examples
 ##' grid.pattern(x=seq(1/6, 5/6, length=6), width=unit(1/8,"npc"), height=unit(0.5,"npc"),
 ##'             motif.width=unit(10, "mm"),  pattern=c(1:6), orientation=45, motif.alpha=0.5,

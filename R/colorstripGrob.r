@@ -9,6 +9,7 @@
 ##' @param raster logical,  use grid.raster (with interpolation)
 ##' @return a grob
 ##' @seealso \code{grid.rect}
+##' 
 ##' @examples
 ##' colorstripGrob()
 ##' \dontrun{
@@ -45,8 +46,8 @@ colorstripGrob <-
                            1/length(fill), 1)
         
         xy <- switch(direction,
-                     "horizontal" = positions[, 1:4],
-                     "vertical" =  positions[seq(nrow(positions), 1), c(2:1, 4:3)])
+                     "horizontal" = positions[, 1:4, drop=FALSE],
+                     "vertical" =  positions[seq(nrow(positions), 1), c(2:1, 4:3), drop=FALSE])
         
         grid.rect(x = unit(xy[, 1], "npc"), y = unit(xy[, 2], "npc"),
                   width = unit(xy[, 3], "npc"),
@@ -63,3 +64,4 @@ colorstripGrob <-
 
 grid.colorstrip <- function(...)
   grid.draw(colorstripGrob(...))
+

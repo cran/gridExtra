@@ -7,14 +7,15 @@
 ##' @param raster raster 
 ##' @param angle angle 
 ##' @param ... optional grob parameters,  passed to imageGrob
-##' @details Very primitive function,  using RGraphics' imageGrob
-##' @return a gTree of class 'pixmap'
+##' @details Very primitive function,  using RGraphics' imageGrob or rasterGrob (R>=2.11)
+##' @return a gTree of class 'pixmap', with natural width and height in points
+##' 
 ##' @examples
 ##' library(pixmap)
 ##' library(RGraphics)
 ##' x <- read.pnm(system.file("pictures/logo.ppm", package="pixmap")[1])
 ##' g1 <- pixmapGrob(x)
-##' dev.new(width=g1$width, height=g1$height) 
+##' dev.new(width=g1$width/72, height=g1$height/72) 
 ##' grid.draw(g1)
  
 pixmapGrob <- 
@@ -39,8 +40,8 @@ function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, ...)
        imageGrob(nrow(Z), ncol(Z), col=pic@col[Z], gp=gpar(col=pic@col[Z]), by=FALSE, vp=vp, ...)
   }
  
-  gTree(width= convertUnit(width, "in", val=TRUE),
-        height=convertUnit(height, "in", val=TRUE) ,
+  gTree(width= width[[1]],
+        height = height[[1]], 
         children=gList(child), childrenvp=vp, cl="pixmap")
   
 }
@@ -58,6 +59,7 @@ as.raster.pixmapRGB <- function(x) {
 ##' @param con connection
 ##' @param ... unused
 ##' @return ...
+##' 
 ##' 
 ## function obtained from Simon Urbanek
 ## to import tiff files in pixmap
@@ -95,3 +97,4 @@ height tags")
    z@blue = t(res[3, , ])
    z
 }
+

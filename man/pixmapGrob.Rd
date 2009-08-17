@@ -4,7 +4,7 @@
 \usage{pixmapGrob(pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, ...)
 }
 \description{create a grob from pixmap object}
-\value{a gTree of class 'pixmap'}
+\value{a gTree of class 'pixmap', with natural width and height in points}
 \arguments{\item{pic}{pixmap object}
 \item{x}{x unit}
 \item{y}{y unit}
@@ -17,6 +17,6 @@
 library(RGraphics)
 x <- read.pnm(system.file("pictures/logo.ppm", package="pixmap")[1])
 g1 <- pixmapGrob(x)
-dev.new(width=g1$width, height=g1$height) 
+dev.new(width=g1$width/72, height=g1$height/72) 
 grid.draw(g1)}
 
