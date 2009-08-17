@@ -6,7 +6,8 @@
 ##' @param scale scale 
 ##' @param raster raster 
 ##' @param angle angle 
-##' @param ... optional grob parameters,  passed to imageGrob
+##' @param vp viewport
+##' @param ... optional grob parameters,  passed to imageGrob or rasterGrob
 ##' @details Very primitive function,  using RGraphics' imageGrob or rasterGrob (R>=2.11)
 ##' @return a gTree of class 'pixmap', with natural width and height in points
 ##' 
@@ -17,9 +18,8 @@
 ##' g1 <- pixmapGrob(x)
 ##' dev.new(width=g1$width/72, height=g1$height/72) 
 ##' grid.draw(g1)
- 
 pixmapGrob <- 
-function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, ...) 
+function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, vp=NULL, ...) 
 {
   rast <- as.raster(pic)
   pic = as(pic, "pixmapIndexed")
@@ -29,20 +29,20 @@ function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, ...)
                drop = FALSE]
   
   angle <- if(is.null(angle)) 0 else angle
-  vp <- viewport(x=x, y=y, width=width, height=height, angle=angle,
+  vpc <- viewport(x=x, y=y, width=width, height=height, angle=angle,
                  xscale = c(0, ncol(Z)), yscale =c(0, nrow(Z)))
   
  if(raster){
-    child <- rasterGrob(rast, vp=vp, ...)
+    child <- rasterGrob(rast, vp=vpc, ...)
 
   } else {
      child <- 
-       imageGrob(nrow(Z), ncol(Z), col=pic@col[Z], gp=gpar(col=pic@col[Z]), by=FALSE, vp=vp, ...)
+       imageGrob(nrow(Z), ncol(Z), col=pic@col[Z], gp=gpar(col=pic@col[Z]), by=FALSE, vp=vpc, ...)
   }
  
   gTree(width= width[[1]],
-        height = height[[1]], 
-        children=gList(child), childrenvp=vp, cl="pixmap")
+        height = height[[1]], vp=vp,
+        children=gList(child), childrenvp=vpc, cl="pixmap")
   
 }
 

@@ -1,9 +1,10 @@
 \name{barbedGrob}
 \title{barbedGrob}
-\usage{barbedGrob(x=stats::runif(10), y=stats::runif(10),
-    size=unit(sample(1:4, 10, repl = TRUE), "char"),
-    pch=21, space=1, only.lines=FALSE, gp=gpar(), name,
-    default.units="npc", vp)}
+\usage{barbedGrob(x = stats::runif(10), y = stats::runif(10), size =
+                 unit(sample(1:4, 10, repl = TRUE), "char"), pch = 21,
+                 arrow = NULL, space = 1, only.lines = FALSE, gp =
+                 gpar(), name = NULL, default.units = "npc", vp = NULL)
+}
 
 \description{
   plot lines and symbols
@@ -17,6 +18,7 @@
   \item{y}{coordinates}
   \item{size}{unit vector for the symbols}
   \item{pch}{vector of symbol types}
+  \item{arrow}{arrow}
   \item{space}{numeric scaling factor for the exclusion zone (see Details)}
   \item{only.lines}{logical: should only split lines be returned?}
   \item{gp}{gpar() object for the symbols}

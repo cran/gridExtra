@@ -2,7 +2,7 @@
 \alias{pixmapGrob}
 \title{create a grob from pixmap object...}
 \usage{pixmapGrob(pic, x=0.5, y=0.5, scale=1, raster=FALSE,
-    angle=0, ...)}
+    angle=0, vp = NULL, ...)}
 
 \description{
   create a grob from pixmap object
@@ -15,7 +15,8 @@
   \item{scale}{scale}
   \item{raster}{raster}
   \item{angle}{angle}
-  \item{...}{optional grob parameters,  passed to imageGrob}
+  \item{vp}{viewport}
+  \item{...}{optional grob parameters,  passed to imageGrob or rasterGrob}
 }
 \examples{library(pixmap)
 library(RGraphics)

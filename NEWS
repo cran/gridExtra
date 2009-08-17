@@ -1,0 +1,11 @@
+
+cda 0.8.5 (2011-10-26) 
+----------------------------------------
+
+FIX
+
+* removed LazyLoad, deprecated in R>=2.14
+
+NEW
+
+* stextGrob text with a background
