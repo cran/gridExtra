@@ -31,7 +31,7 @@ c(x, y)[ord]
 
 ##' calculates the max of a list of units arranged in a matrix
 ##'
-##' @aliases rowMax.units, colMax.units 
+##' @aliases rowMax.units colMax.units 
 ##' @title rowMax.units
 ##' 
 ##' @param u list of units
@@ -56,8 +56,8 @@ colMax.units <- function(u, ncol){ # colMax with a fake matrix of units
 
 ##' expand a list of arguments to full length (and misc. undocumented functions)
 ##'
-##' 
-##' @aliases updatelist textii rectii pchlist
+##' @title expand.arguments
+##' @aliases expand.arguments updatelist textii rectii pchlist
 ##' @param ... arguments
 ##' @return ...
 expand.arguments <- function(...){

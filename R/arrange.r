@@ -1,6 +1,6 @@
 ##' arrange ggplot2, lattice, and grobs on a page
 ##'
-##' @aliases grid.arrange arrangeGrob latticeGrob drawDetails.lattice
+##' @aliases grid.arrange arrangeGrob latticeGrob drawDetails.lattice print.arrange
 ##' @title arrangeGrob
 ##' @param ...  plots of class ggplot2,  trellis, or grobs, and valid arguments to grid.layout
 ##' @param main string, or grob (requires a well-defined height, see example)
@@ -54,6 +54,8 @@ arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
   if(is.character(sub)) sub <- textGrob(sub)
   if(is.character(legend)) legend <- textGrob(legend, rot=-90)
   if(is.character(left)) left <- textGrob(left, rot=90)
+
+  arrange.class <- "arrange" # grob class
   
   dots <- list(...)
   
@@ -93,6 +95,11 @@ arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
   lay <- do.call(grid.layout, params.layout)
   
   fg <- frameGrob(layout=lay)
+
+  ## if a ggplot is present, make the grob derive from the ggplot class
+  classes <- lapply(grobs, class)
+  inherit.ggplot <- any("ggplot" %in% unlist(classes))
+  if(inherit.ggplot) arrange.class <- c(arrange.class, "ggplot")
   
   ii.p <- 1
   for(ii.row in seq(1, nrow)){
@@ -139,7 +146,7 @@ arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
   af <- placeGrob(af, legend, row=2, col=3)
   
  
-  invisible(af)
+  invisible(gTree(children=gList(af), cl=arrange.class))
 }
 
 grid.arrange <- function(..., as.table=FALSE, clip=TRUE,
@@ -156,4 +163,10 @@ latticeGrob <- function(p, ...){
 
 drawDetails.lattice <- function(x, recording=FALSE){
   lattice:::plot.trellis(x$p, newpage=FALSE)
+}
+
+
+print.arrange <- function(x, newpage = is.null(vp), vp = NULL, ...) {
+  if(newpage) grid.newpage()
+  grid.draw(editGrob(x, vp=vp))
 }

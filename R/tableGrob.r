@@ -113,8 +113,10 @@ makeTableGrobs <- function(content, rnames=NULL, cnames=NULL,
 
 
 arrangeTableGrobs <- function(lgt, lgf, nrow, ncol, widths, heights,
+                              show.colnames, show.rownames,
                                padding.h = unit(4, "mm"), padding.v=unit(4, "mm"), 
                                just=c("center", "center"), separator= "white",
+                              show.vlines=FALSE, show.hlines=FALSE, show.namesep=FALSE,
                                show.box=FALSE, show.csep=FALSE, show.rsep=FALSE){
  
   label.ind <- 1   # index running accross labels
@@ -132,25 +134,40 @@ arrangeTableGrobs <- function(lgt, lgf, nrow, ncol, widths, heights,
     }
   }
 
-  ## draw horizontal lines, stopping or not before the names
-  for (ii in seq(1, nrow, 1)) 
+  if(show.hlines){
+    ## draw horizontal lines, stopping or not before the names
+    for (ii in seq(2, nrow, 1)) 
       grid.segments(0, 0, 1, 0, gp=gpar(col=separator), vp=viewport( layout.pos.row=ii,
-                                 layout.pos.col=seq(1+!show.rsep, ncol+1)))
-  ## draw vertical lines, stopping or not before the names
-  for (jj in seq(1, ncol, 1)) 
-      grid.segments(1, 0, 1, 1, gp=gpar(col=separator), vp=viewport( layout.pos.col=jj,
-                                 layout.pos.row=seq(1+!show.csep, nrow+1)))
-  ## draw boxes around the content and the names
-  if(show.box){
-  grid.rect(gp=gpar(col=separator, fill=NA),
-            vp=viewport( layout.pos.col=seq(2, ncol+1), layout.pos.row=seq(2, nrow+1)))
-  grid.rect(gp=gpar(col=separator, fill=NA), 
-            vp=viewport( layout.pos.col=seq(2, ncol+1), layout.pos.row=1))
-  grid.rect(gp=gpar(col=separator, fill=NA),
-            vp=viewport( layout.pos.row=seq(2, nrow+1), layout.pos.col=1))
+                                                          layout.pos.col=seq(1+!show.rsep, ncol+1)))
   }
-}
+  if(show.vlines){
+    ## draw vertical lines, stopping or not before the names
+    for (jj in seq(2, ncol, 1)) 
+      grid.segments(1, 0, 1, 1, gp=gpar(col=separator), vp=viewport( layout.pos.col=jj,
+                                                          layout.pos.row=seq(1+!show.csep, nrow+1)))
+  }
+  ## draw box around the content (and the names if present)
+  if(show.box){
+    if(show.colnames & show.rownames){
+       grid.border(type=16, colour=separator,
+            vp=viewport( layout.pos.col=seq(2, ncol+1), layout.pos.row=seq(2, nrow+1)))
+     } else 
+    grid.rect(gp=gpar(col=separator, fill=NA), 
+                vp=viewport( layout.pos.col=seq(1, ncol+1), layout.pos.row=seq(1, nrow+1)))
+  }
+  
+  if(show.namesep){
+  ## draw corner, style depends on the presence of row/colnames
+    type <- if(show.colnames & show.rownames) 8 else
+    if(show.colnames & !show.rownames) 4 else
+    if(!show.colnames & show.rownames) 5 else 1
+    
+      grid.border(type=type, colour=separator,
+            vp=viewport( layout.pos.col=seq(2, ncol+1), layout.pos.row=seq(2, nrow+1)))
+  }
+  
 
+}
 
 
 ##' create a list of text and fill grobs and calculates the sizes for a table display
@@ -165,20 +182,23 @@ arrangeTableGrobs <- function(lgt, lgf, nrow, ncol, widths, heights,
 ##' @param col.just justification of labels
 ##' @param core.just justification of labels
 ##' @param separator colour of the border lines 
-##' @param show.box logical
-##' @param show.csep logical separator for colnames 
-##' @param show.rsep logical separator for rownames 
-##' @param equal.width logical  
+##' @param show.box logical box surrounding the table
+##' @param show.vlines logical vertical lines
+##' @param show.hlines logical horizontal lines
+##' @param show.namesep logical draw lines to separate header(s)
+##' @param show.csep logical extend vert. separator to colnames 
+##' @param show.rsep logical extend vert. separator to rownames 
+##' @param equal.width logical 
 ##' @param equal.height logical  
-##' @param padding.h unit of horizontal margin,  per cell
-##' @param padding.v unit of vertical margin,  per cell
+##' @param padding.h unit of horizontal margin, per cell
+##' @param padding.v unit of vertical margin, per cell
 ##' @param gpar.coretext gpar() for inner text
 ##' @param gpar.corefill gpar() for inner fill
 ##' @param gpar.coltext gpar() for colnames text
-##' @param h.odd.alpha h.odd.alpha 
-##' @param h.even.alpha h.even.alpha 
-##' @param v.odd.alpha v.odd.alpha 
-##' @param v.even.alpha v.even.alpha 
+##' @param h.odd.alpha numeric transparency factor for odd horizontal cells
+##' @param h.even.alpha numeric transparency factor for even horizontal cells
+##' @param v.odd.alpha numeric transparency factor for odd vertical cells
+##' @param v.even.alpha numeric transparency factor for even vertical cells
 ##' @param gpar.colfill gpar() for colnames fill
 ##' @param gpar.rowtext gpar() for rownames text
 ##' @param gpar.rowfill gpar() for rownames fill
@@ -217,7 +237,8 @@ arrangeTableGrobs <- function(lgt, lgf, nrow, ncol, widths, heights,
 tableGrob <- function(d, rows=rownames(d), cols=colnames(d), parse=FALSE,
                       show.rownames=TRUE, show.colnames=TRUE,
                       row.just="center", col.just="center", core.just="center", 
-                      separator="white", show.box=FALSE, show.csep=FALSE, show.rsep=FALSE,
+                      separator="white", show.box=FALSE, show.vlines=FALSE, show.hlines=FALSE,
+                      show.namesep=FALSE, show.csep=FALSE, show.rsep=FALSE,
                       equal.width = FALSE, equal.height=FALSE, 
                       padding.h = unit(4, "mm"), padding.v=unit(4, "mm"),
                       gp=NULL, 
@@ -238,7 +259,7 @@ tableGrob <- function(d, rows=rownames(d), cols=colnames(d), parse=FALSE,
   lg <- 
   with(theme, 
        makeTableGrobs(as.character(as.matrix(d)), rows, cols, parse=parse,
-                        nrow(d), ncol(d), 
+                        NROW(d), NCOL(d), 
                         row.just = row.just, col.just = col.just, core.just = core.just, 
                         equal.width = equal.width, equal.height = equal.height, 
                         gpar.coretext = gpar.coretext,
@@ -255,6 +276,7 @@ tableGrob <- function(d, rows=rownames(d), cols=colnames(d), parse=FALSE,
          show.rownames=show.rownames, show.colnames=show.colnames,
          row.just = row.just, col.just = col.just, core.just = core.just, 
          separator=separator, show.box=show.box,
+         show.vlines=show.vlines, show.hlines=show.hlines, show.namesep=show.namesep,
          show.csep=show.csep, show.rsep=show.rsep,
          equal.width = equal.width, equal.height = equal.height, 
          padding.h = padding.h, padding.v = padding.v, 
@@ -278,7 +300,7 @@ grid.table <- function(...)
 drawDetails.table <- function(x, recording=TRUE){
   
   lg <- with(x, makeTableGrobs(as.character(as.matrix(d)), rows, cols,
-         nrow(d), ncol(d), parse,
+         NROW(d), NCOL(d), parse,
          row.just = row.just, col.just = col.just, core.just = core.just, 
          equal.width = equal.width, equal.height = equal.height, 
          gpar.coretext = gpar.coretext,
@@ -304,9 +326,11 @@ drawDetails.table <- function(x, recording=TRUE){
   
   pushViewport(cells)
   tg <- arrangeTableGrobs(lg$lgt, lg$lgf, lg$nrow, lg$ncol, lg$widths, lg$heights,
-          padding.h = x$padding.h, padding.v = x$padding.v, 
-          separator=x$separator, show.box=x$show.box,
-          show.csep=x$show.csep, show.rsep=x$show.rsep)
+                          show.colnames=x$show.colnames, show.rownames=x$show.rownames,
+                          padding.h = x$padding.h, padding.v = x$padding.v, 
+                          separator=x$separator, show.box=x$show.box,
+                          show.vlines=x$show.vlines, show.hlines=x$show.hlines,		
+                          show.namesep=x$show.namesep, show.csep=x$show.csep, show.rsep=x$show.rsep)
   upViewport()
 }
 widthDetails.table <- function(x){
@@ -329,23 +353,16 @@ heightDetails.table <- function(x){
 }
 
 
-updatelist <- function (x, y) 
-{  # borrowed from reshape package
-    common <- intersect(names(x), names(y))
-    x[common] <- y[common]
-    x
-}
-
-
 ##' themes for table grob
 ##' @aliases theme.default theme.grey theme.list theme.blank theme.vertical theme.black theme.white
 ##' @title theme
 ##' @param ... optional params to overwrite the theme defaults
 ##' @return theme
 theme.default <- theme.grey <- function(...)
-  updatelist(list(show.rownames=TRUE, show.colnames=TRUE,
+  modifyList(list(show.rownames=TRUE, show.colnames=TRUE,
      row.just="center", col.just="center", core.just="center", 
-     separator="white", show.box=FALSE, show.csep=FALSE, show.rsep=FALSE,
+     separator="white", show.box=FALSE, show.vlines=FALSE, show.hlines=FALSE, show.namesep=FALSE,
+                  show.csep=FALSE, show.rsep=FALSE,
      equal.width = FALSE, equal.height=FALSE, 
      padding.h = unit(4, "mm"), padding.v=unit(4, "mm"),
      gp=NULL, 
@@ -360,7 +377,7 @@ theme.default <- theme.grey <- function(...)
 
 
 theme.list <- function(...)
-  updatelist(
+  modifyList(
              theme.default(show.rownames=FALSE, show.colnames=FALSE,separator=NA,
                            core.just="left", gpar.corefill=gpar(col=NA),
                            show.csep=FALSE, show.rsep=FALSE,
@@ -369,7 +386,7 @@ theme.list <- function(...)
                            gpar.colfill = gpar(fill = NA, col=NA)), list(...))
 
 theme.black <- function(...)
-  updatelist(
+  modifyList(
              theme.default(show.rownames=TRUE, show.colnames=TRUE,
                            separator="white",
                            h.odd.alpha = 0.8, h.even.alpha = 0.5, 
@@ -382,7 +399,7 @@ theme.black <- function(...)
                            gpar.colfill = gpar(fill = "black", col=NA)), list(...))
 
 theme.blank <- function(...)
-  updatelist(
+  modifyList(
              theme.default(show.rownames=TRUE, show.colnames=TRUE,
                            gpar.corefill=gpar(col=NA),separator=NA, 
                            show.csep=FALSE, show.rsep=FALSE,
@@ -392,7 +409,7 @@ theme.blank <- function(...)
 
 
 theme.vertical <- function(...)
-  updatelist(
+  modifyList(
              theme.default(show.rownames=FALSE, show.colnames=TRUE,
                            row.just="center", col.just="center", core.just="center", 
                            separator="white", show.box=FALSE, show.csep=FALSE, show.rsep=FALSE,
@@ -409,7 +426,7 @@ theme.vertical <- function(...)
 
 
 theme.white <- function(...)
-  updatelist(
+  modifyList(
              theme.default(show.rownames=FALSE, show.colnames=TRUE,
                            row.just="center", col.just="center", core.just="center", 
                            separator="white", show.box=FALSE, show.csep=FALSE, show.rsep=FALSE,

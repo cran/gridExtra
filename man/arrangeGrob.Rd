@@ -1,22 +1,26 @@
 \name{arrangeGrob}
-\alias{arrangeGrob}
 \title{arrangeGrob}
-\usage{arrangeGrob(..., as.table=FALSE, clip=TRUE, main, sub, left, legend)
+\usage{arrangeGrob(..., as.table=FALSE, clip=TRUE, main, sub,
+    left, legend)}
+
+\description{
+  arrange ggplot2, lattice, and grobs on a page
 }
-\description{arrange ggplot2, lattice, and grobs on a page}
 \alias{grid.arrange}
 \alias{arrangeGrob}
 \alias{latticeGrob}
 \alias{drawDetails.lattice}
+\alias{print.arrange}
 \value{return a frame grob; side-effect (plotting) if plot=T}
 \seealso{\code{grid.layout}}
-\arguments{\item{...}{plots of class ggplot2,  trellis, or grobs, and valid arguments to grid.layout}
-\item{main}{string, or grob (requires a well-defined height, see example)}
-\item{sub}{string, or grob (requires a well-defined height, see example)}
-\item{legend}{string, or grob (requires a well-defined width, see example)}
-\item{left}{string, or grob (requires a well-defined width, see example)}
-\item{as.table}{logical: bottom-left to top-right or top-left to bottom-right}
-\item{clip}{logical: clip every object to its viewport}
+\arguments{
+  \item{...}{plots of class ggplot2,  trellis, or grobs, and valid arguments to grid.layout}
+  \item{main}{string, or grob (requires a well-defined height, see example)}
+  \item{sub}{string, or grob (requires a well-defined height, see example)}
+  \item{legend}{string, or grob (requires a well-defined width, see example)}
+  \item{left}{string, or grob (requires a well-defined width, see example)}
+  \item{as.table}{logical: bottom-left to top-right or top-left to bottom-right}
+  \item{clip}{logical: clip every object to its viewport}
 }
 \examples{\dontrun{
 require(ggplot2)
@@ -45,4 +49,3 @@ main ="this is a title",
 left = "This is my global Y-axis title")
 
 }}
-
