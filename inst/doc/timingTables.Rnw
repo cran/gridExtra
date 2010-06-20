@@ -1,0 +1,346 @@
+
+\documentclass[nogin,a4paper,12pt]{article}
+\usepackage{graphicx,xspace}
+\usepackage[utf8]{inputenc}
+\usepackage[left=1.5cm,top=2cm,bottom=2cm,right=1.5cm]{geometry}
+\begin{document}
+\title{Profiling a table layout using Grid}
+\author{Baptiste Auguié}
+%\VignetteIndexEntry{timingTables}
+\maketitle
+
+
+\section{Setup}
+<<setup>>=
+  
+library(grid)
+#library(profr)
+d <- head(iris)
+dlong <- iris # large dataset for final timing
+reps <- 5 # replicates of dlong for the first timing
+
+## define some helping functions
+rowMax.units <- function(u, nrow){ # rowMax with a fake matrix of units
+  matrix.indices <- matrix(seq_along(u), nrow=nrow)
+  do.call(unit.c, lapply(seq(1, nrow), function(ii) {
+    max(u[matrix.indices[ii, ]])
+  }))
+}
+
+colMax.units <- function(u, ncol){ # colMax with a fake matrix of units
+  matrix.indices <- matrix(seq_along(u), ncol=ncol)
+  do.call(unit.c, lapply(seq(1, ncol), function(ii) {
+    max(u[matrix.indices[, ii]])
+ }))
+}
+
+@
+
+
+\section{Creating lists of grobs}
+
+Two functions are defined here, \texttt{makeContent} and \texttt{makeContentInVp}. Both return a list of text grobs from a data.frame, but the second one assigns a named viewport to each grob. A third version, \texttt{makeContentInVp2} evaluates the possibility of editing the viewport in a list of grobs previously created.
+
+<<groblists>>=
+
+makeContent <- function(d){
+  content <- as.character(unlist(c(d)))
+
+  textii <- function(d, gp=gpar(), name="row-label-"){
+    function(ii)
+      textGrob(label=d[ii], gp=gp, name=paste(name, ii, sep=""))
+  }
+  makeOneLabel <- textii(d=content, gp=gpar(col="blue"), name="content-label-")
+  lg <- lapply(seq_along(content), makeOneLabel)
+  
+  list(lg=lg, nrow=nrow(d), ncol=ncol(d))
+}
+
+
+makeContentInVp <- function(d){
+  content <- as.character(unlist(c(d)))
+  nc <- ncol(d)
+  nr <- nrow(d)
+  
+  ## convert an index to a 2D array of nrow and ncol indices
+  n2nm <- function(nr, nc){
+    expand.grid(seq(1, nr), seq(1, nc)) 
+  }
+  
+  vp.ind <- n2nm(nr, nc)
+  
+  textii <- function(d, gp=gpar(), name="content-label-"){
+    function(ii)
+      textGrob(label=d[ii], gp=gp,
+               name=paste(name, ii, sep=""), 
+               vp=viewport(layout.pos.row=vp.ind[ii, 1], 
+                           layout.pos.col=vp.ind[ii, 2]))
+  }
+  
+  makeOneLabel <- textii(d=content, gp=gpar(col="blue"))
+  
+  lg <- lapply(seq_along(content), makeOneLabel)
+  
+  list(lg=lg, nrow=nrow(d), ncol=ncol(d))
+}
+
+makeContentInVp2 <- function(d){
+  content <- as.character(unlist(c(d)))
+  nc <- ncol(d)
+  nr <- nrow(d)
+  
+  n2nm <- function(nr, nc){
+    expand.grid(seq(1, nr), seq(1, nc)) 
+  }
+  
+  vp.ind <- n2nm(nr, nc)
+  ## here we edit the viewport of all grobs
+  editVp <- function(glist){
+    
+    for(ii in seq_along(glist))
+      glist[[ii]] <- editGrob(glist[[ii]],
+                              vp=viewport(layout.pos.row=vp.ind[ii, 1],
+                                          layout.pos.col=vp.ind[ii, 2]))
+
+  glist
+}
+  
+  textii <- function(d, gp=gpar(), name="content-label-"){
+    function(ii)
+      textGrob(label=d[ii], gp=gp,
+               name=paste(name, ii, sep=""))
+  }
+  
+  makeOneLabel <- textii(d=content, gp=gpar(col="blue"))
+  
+  lg <- lapply(seq_along(content), makeOneLabel)
+  lg <- editVp(lg)
+  
+  list(lg=lg, nrow=nrow(d), ncol=ncol(d))
+}
+
+summary(content <- makeContent(d))
+summary(content2 <- makeContentInVp(d))
+
+@
+
+We can evaluate the relative performance of \texttt{makeContentInVp} and \texttt{makeContentInVp2}, 
+<<profiling1>>=
+
+## profiling the creation of grob lists
+## replicate 5 times the iris dataset
+d <- do.call(rbind, lapply(1:reps, function(ii) dlong)) 
+
+system.time(makeContentInVp(d))
+system.time(makeContentInVp2(d))
+
+## prof1 <- profr(makeContentInVp(iris))
+## prof2 <- profr(makeContentInVp2(iris))
+## head(prof1)
+## head(prof2)
+@ 
+
+No big difference so far.
+
+\section{Functions that create a table from a list of grobs}
+
+\begin{itemize}
+  \item table1 uses \texttt{frameGrob} and \texttt{packGrob}
+  \item table2 uses \texttt{frameGrob} but calculates the sizes manually and uses \texttt{placeGrob}
+  \item table3 creates a \texttt{grid.layout} and draws the grobs in the different viewports.
+  \item table4 creates a \texttt{grid.layout} and draws grobs that had a previously specified viewport.
+\end{itemize}
+
+<<table1>>=
+## table1 uses grid.pack
+table1 <- function(content){
+  
+  gcells = frameGrob(name="table.cells", 
+    layout = grid.layout(content$nrow, content$ncol))
+  
+  label.ind <- 1   # index running accross labels
+  
+  for (ii in seq(1, content$ncol, 1)) {
+    for (jj in seq(1, content$nrow, 1)) {
+      gcells = packGrob(gcells, content$lg[[label.ind]], row=jj, col=ii, dynamic=TRUE, border=unit(rep(2, 4), "mm"))
+      label.ind <- label.ind + 1
+    }
+  }
+  grid.draw(gTree(children=gList(gcells)))
+}
+@
+
+<<table2>>=
+## table2 uses grid.place
+table2 <- function(content){
+  
+  padding <- unit(4, "mm")
+  lg <- content$lg
+  ## retrieve the widths and heights of all textGrobs 
+  wg <- lapply(lg, grobWidth) # list of grob widths
+  hg <- lapply(lg, grobHeight) # list of grob heights
+  
+  ## concatenate this units
+  widths.all <- do.call(unit.c, wg) # all grob widths
+  heights.all <- do.call(unit.c, hg)    #all grob heights
+  
+  ## matrix-like operations on units to define the table layout
+  widths <- colMax.units(widths.all, content$ncol)  # all column widths
+  heights <- rowMax.units(heights.all, content$nrow)  # all row heights
+  
+  gcells = frameGrob(name="table.cells", 
+    layout = grid.layout(content$nrow, content$ncol,
+      width=widths+padding, height=heights+padding))
+  
+  label.ind <- 1   # index running accross labels
+  
+  for (ii in seq(1, content$ncol, 1)) {
+    for (jj in seq(1, content$nrow, 1)) {
+      gcells = placeGrob(gcells, content$lg[[label.ind]], row=jj, col=ii)
+      label.ind <- label.ind + 1
+    }
+  }
+  grid.draw(gTree(children=gList(gcells)))
+}
+
+@
+
+
+<<table3>>=
+## table3 uses grid.layout
+table3 <- function(content){
+  
+  padding <- unit(4, "mm")
+  lg <- content$lg
+  ## retrieve the widths and heights of all textGrobs 
+  wg <- lapply(lg, grobWidth) # list of grob widths
+  hg <- lapply(lg, grobHeight) # list of grob heights
+  
+  ## concatenate this units
+  widths.all <- do.call(unit.c, wg) # all grob widths
+  heights.all <- do.call(unit.c, hg)    #all grob heights
+  
+  ## matrix-like operations on units to define the table layout
+  widths <- colMax.units(widths.all, content$ncol)  # all column widths
+  heights <- rowMax.units(heights.all, content$nrow)  # all row heights
+  
+  cells = viewport(name="table.cells", layout =
+    grid.layout(content$nrow, content$ncol,
+                width=widths+padding, height=heights+padding) )
+  
+  pushViewport(cells)
+  
+  label.ind <- 1   # index running accross labels
+  
+  ## loop over columns and rows
+  for (ii in seq(1, content$ncol, 1)) {
+    for (jj in seq(1, content$nrow, 1)) {
+      ## push a viewport for cell (ii,jj)
+      pushViewport(vp=viewport( layout.pos.row=jj, layout.pos.col=ii))
+      grid.draw( lg[[label.ind]])       # draw the text
+      upViewport()
+      
+      label.ind <- label.ind + 1
+    }
+  }
+  upViewport()
+}
+@
+
+<<table4>>=
+## table4 uses grobs that already have a viewport assigned
+table4 <- function(content){
+  
+  padding <- unit(4, "mm")
+  lg <- content$lg
+  ## retrieve the widths and heights of all textGrobs 
+  wg <- lapply(lg, grobWidth) # list of grob widths
+  hg <- lapply(lg, grobHeight) # list of grob heights
+  
+  ## concatenate this units
+  widths.all <- do.call(unit.c, wg) # all grob widths
+  heights.all <- do.call(unit.c, hg)    #all grob heights
+  
+  ## matrix-like operations on units to define the table layout
+  widths <- colMax.units(widths.all, content$ncol)  # all column widths
+  heights <- rowMax.units(heights.all, content$nrow)  # all row heights
+  
+  vp <- viewport(layout=grid.layout(content$nrow,content$ncol,
+                   w=widths+padding, h=heights+padding))
+  
+  grid.draw(gTree(children=do.call(gList, lg), vp=vp))
+  
+}
+@
+<<output, fig=TRUE, echo=FALSE>>=
+
+vp = viewport(layout=grid.layout(2, 2))
+pushViewport(vp)
+
+pushViewport(viewport(layout.pos.row=1, layout.pos.col=1))
+table1(content)
+grid.text("table1(content)", 0.5, unit(0, "native")+unit(1, "line"))
+upViewport()
+pushViewport(viewport(layout.pos.row=1, layout.pos.col=2))
+table2(content)
+grid.text("table2(content)", 0.5, unit(0, "native")+unit(1, "line"))
+upViewport()
+pushViewport(viewport(layout.pos.row=2, layout.pos.col=1))
+table3(content)
+grid.text("table3(content)", 0.5, unit(0, "native")+unit(1, "line"))
+upViewport()
+pushViewport(viewport(layout.pos.row=2, layout.pos.col=2))
+table4(content2)
+grid.text("table4(content2)", 0.5, unit(0, "native")+unit(1, "line"))
+upViewport()
+
+@ 
+
+<<timing>>=
+d <- dlong
+
+content <- makeContent(d)
+content2 <- makeContentInVp(d)
+
+## pdf("test-timing-iris.pdf", height=45)
+## system.time(table1(content)) 
+## grid.newpage()
+## system.time(table2(content))
+## grid.newpage()
+## system.time(table3(content))
+## grid.newpage()
+## system.time(table4(content2))
+## dev.off()
+
+## prof3 <- profr(table2(content))
+## prof4 <- profr(table3(content))
+## prof5 <- profr(table4(content2))
+
+## save(prof3, prof4, prof5, file="profiling.rda")
+
+## head(prof3)
+## head(prof4)
+## head(prof5)
+
+## Rprof("table1.out") 
+## grid.newpage()
+## table1(content)
+## Rprof("table2.out") 
+## grid.newpage()
+## table2(content)
+## Rprof("table3.out") 
+## grid.newpage()
+## table3(content)
+## Rprof("table4.out") 
+## grid.newpage()
+## table4(content2)
+## Rprof(NULL)
+
+## system("R CMD Rprof table1.out", int=T)
+## system("R CMD Rprof table2.out", int=T)
+## system("R CMD Rprof table3.out", int=T)
+## system("R CMD Rprof table4.out", int=T)
+@ 
+
+
+\end{document}
