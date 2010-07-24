@@ -6,7 +6,7 @@ tile.motif <- function(m, nx=10, ny=nx){
 ##' rectangular grob with raster fill pattern
 ##'
 ##' @aliases rpatternGrob tile.motif widthDetails.rpattern heightDetails.rpattern drawDetails.rpattern grid.rpattern
-##' @title arrange
+##' @title rpatternGrob
 ##' @param x x unit
 ##' @param y y unit
 ##' @param width width 
@@ -21,6 +21,7 @@ tile.motif <- function(m, nx=10, ny=nx){
 ##' @param gp gp 
 ##' @param ... additional params passed to the grob
 ##' @return grob of class rpattern
+##' 
 ##' @examples
 ##' .lines45 <- matrix("white", ncol=100, nrow=100)
 ##' diag(.lines45) <- "black"

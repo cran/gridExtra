@@ -7,6 +7,7 @@
 ##' @param ... unused
 ##' @return a data.frame
 ##' @seealso \code{polygon.regular}
+##' 
 ##' @examples
 ##' polygon2(5)
 
@@ -43,6 +44,7 @@ if(rotateFromOrigin)
 #' @param r radius
 #' @return a data.frame
 #' @seealso \code{polygon.regular}
+##' 
 #' @examples
 #' polygon.star(5)
 
@@ -95,6 +97,7 @@ polygon.star <- function(n=4, adj=pi/2, r=1){
 #' @return a data.frame
 #' @seealso \code{star}
 #' @references ngon from the 'maptree' package
+##' 
 #' @examples
 #' polygon.regular(5)
 

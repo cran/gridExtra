@@ -4,6 +4,7 @@
 \usage{tableGrob(d, rows=rownames(d), cols=colnames(d), show.rownames=TRUE,
     show.colnames=TRUE, row.just="center", col.just="center",
     core.just="center", separator="white", show.box=FALSE,
+    show.vlines=FALSE, show.hlines=FALSE, show.namesep=FALSE,
     show.csep=FALSE, show.rsep=FALSE, equal.width=FALSE,
     equal.height=FALSE, padding.h=unit(4, "mm"), padding.v=unit(4,
     "mm"), gp, gpar.coretext=gpar(col = "black", cex = 1),
@@ -30,20 +31,23 @@
 \item{col.just}{justification of labels}
 \item{core.just}{justification of labels}
 \item{separator}{colour of the border lines}
-\item{show.box}{logical}
-\item{show.csep}{logical separator for colnames}
-\item{show.rsep}{logical separator for rownames}
+\item{show.box}{logical box surrounding the table}
+\item{show.vlines}{logical vertical lines}
+\item{show.hlines}{logical horizontal lines}
+\item{show.namesep}{logical draw lines to separate header(s)}
+\item{show.csep}{logical extend vert. separator to colnames}
+\item{show.rsep}{logical extend vert. separator to rownames}
 \item{equal.width}{logical}
 \item{equal.height}{logical}
-\item{padding.h}{unit of horizontal margin,  per cell}
-\item{padding.v}{unit of vertical margin,  per cell}
+\item{padding.h}{unit of horizontal margin, per cell}
+\item{padding.v}{unit of vertical margin, per cell}
 \item{gpar.coretext}{gpar() for inner text}
 \item{gpar.corefill}{gpar() for inner fill}
 \item{gpar.coltext}{gpar() for colnames text}
-\item{h.odd.alpha}{h.odd.alpha}
-\item{h.even.alpha}{h.even.alpha}
-\item{v.odd.alpha}{v.odd.alpha}
-\item{v.even.alpha}{v.even.alpha}
+\item{h.odd.alpha}{numeric transparency factor for odd horizontal cells}
+\item{h.even.alpha}{numeric transparency factor for even horizontal cells}
+\item{v.odd.alpha}{numeric transparency factor for odd vertical cells}
+\item{v.even.alpha}{numeric transparency factor for even vertical cells}
 \item{gpar.colfill}{gpar() for colnames fill}
 \item{gpar.rowtext}{gpar() for rownames text}
 \item{gpar.rowfill}{gpar() for rownames fill}
@@ -68,7 +72,7 @@ grid.edit("test",gp=gpar(fontsize=8, lwd=2),  equal.width=TRUE, grep=TRUE, globa
 lg <- lapply(c("theme.blank", "theme.default", "theme.white",  "theme.vertical",  "theme.list", "theme.black"),
 function(x) tableGrob(head(iris[, 1:3]), theme=get(x)()))
 grid.newpage()
-do.call(arrange, lg)
+do.call(grid.arrange, lg)
 \dontrun{
 ## timing: a bit slow due to repeated on-the-fly calculations 
 pdf("test2.pdf", height=50)

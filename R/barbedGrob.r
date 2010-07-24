@@ -13,7 +13,8 @@
 ##' @param default.units default units
 ##' @param vp viewport
 ##' @return a grob
-##' @seealso \code{grid.segments}, \code{grid.points} 
+##' @seealso \code{grid.segments}, \code{grid.points}
+##' 
 ##' @examples
 ##' grid.barbed(name="test")
 ##' grid.edit("test", gp=gpar(fill="blue", lwd=3))

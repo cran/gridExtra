@@ -1,11 +1,11 @@
-\name{arrange}
-\alias{arrange}
-\title{arrange}
-\usage{arrange(..., as.table=FALSE, plot=TRUE, clip=TRUE, main, sub, left, legend,
-    newpage=FALSE)
+\name{arrangeGrob}
+\alias{arrangeGrob}
+\title{arrangeGrob}
+\usage{arrangeGrob(..., as.table=FALSE, clip=TRUE, main, sub, left, legend)
 }
 \description{arrange ggplot2, lattice, and grobs on a page}
-\alias{arrange}
+\alias{grid.arrange}
+\alias{arrangeGrob}
 \alias{latticeGrob}
 \alias{drawDetails.lattice}
 \value{return a frame grob; side-effect (plotting) if plot=T}
@@ -15,18 +15,16 @@
 \item{sub}{string, or grob (requires a well-defined height, see example)}
 \item{legend}{string, or grob (requires a well-defined width, see example)}
 \item{left}{string, or grob (requires a well-defined width, see example)}
-\item{plot}{logical plot or not}
 \item{as.table}{logical: bottom-left to top-right or top-left to bottom-right}
 \item{clip}{logical: clip every object to its viewport}
-\item{newpage}{logical}
 }
 \examples{\dontrun{
 require(ggplot2)
 plots = lapply(1:5, function(.x) qplot(1:10,rnorm(10),main=paste("plot",.x)))
-do.call(arrange,  plots)
 require(gridExtra)
+do.call(grid.arrange,  plots)
 require(lattice)
-arrange(qplot(1:10), xyplot(1:10~1:10), tableGrob(head(iris)), nrow=2, as.table=TRUE, main="test main", sub=textGrob("test sub", gp=gpar(font=2)))
+grid.arrange(qplot(1:10), xyplot(1:10~1:10), tableGrob(head(iris)), nrow=2, as.table=TRUE, main="test main", sub=textGrob("test sub", gp=gpar(font=2)))
 
 ## adding a common legend
 library(ggplot2)
@@ -40,7 +38,7 @@ leg <- ggplotGrob(p1 + opts(keep="legend_box"))
 legend=gTree(children=gList(leg), cl="legendGrob")
 widthDetails.legendGrob <- function(x) unit(2, "cm")
 
-arrange(p1 + opts(legend.position="none"),
+grid.arrange(p1 + opts(legend.position="none"),
 p2 + opts(legend.position="none"),
 legend=legend,
 main ="this is a title",

@@ -1,26 +1,25 @@
 ##' arrange ggplot2, lattice, and grobs on a page
 ##'
-##' @aliases arrange latticeGrob drawDetails.lattice
-##' @title arrange
+##' @aliases grid.arrange arrangeGrob latticeGrob drawDetails.lattice
+##' @title arrangeGrob
 ##' @param ...  plots of class ggplot2,  trellis, or grobs, and valid arguments to grid.layout
 ##' @param main string, or grob (requires a well-defined height, see example)
 ##' @param sub string, or grob (requires a well-defined height, see example)
 ##' @param legend string, or grob (requires a well-defined width, see example)
 ##' @param left string, or grob (requires a well-defined width, see example)
-##' @param plot logical plot or not
 ##' @param as.table logical: bottom-left to top-right or top-left to bottom-right
 ##' @param clip logical: clip every object to its viewport
-##' @param newpage logical
 ##' @return return a frame grob; side-effect (plotting) if plot=T
 ##' @seealso \code{grid.layout}
+##' 
 ##' @examples
 ##' \dontrun{
 ##' require(ggplot2)
 ##' plots = lapply(1:5, function(.x) qplot(1:10,rnorm(10),main=paste("plot",.x)))
-##' do.call(arrange,  plots)
 ##' require(gridExtra)
+##' do.call(grid.arrange,  plots)
 ##' require(lattice)
-##' arrange(qplot(1:10), xyplot(1:10~1:10), tableGrob(head(iris)), nrow=2, as.table=TRUE, main="test main", sub=textGrob("test sub", gp=gpar(font=2)))
+##' grid.arrange(qplot(1:10), xyplot(1:10~1:10), tableGrob(head(iris)), nrow=2, as.table=TRUE, main="test main", sub=textGrob("test sub", gp=gpar(font=2)))
 ##' 
 ##' ## adding a common legend
 ##' library(ggplot2)
@@ -34,7 +33,7 @@
 ##' legend=gTree(children=gList(leg), cl="legendGrob")
 ##' widthDetails.legendGrob <- function(x) unit(2, "cm")
 ##' 
-##' arrange(p1 + opts(legend.position="none"),
+##' grid.arrange(p1 + opts(legend.position="none"),
 ##'         p2 + opts(legend.position="none"),
 ##'         legend=legend,
 ##'         main ="this is a title",
@@ -42,8 +41,8 @@
 ##' 
 ##' }
 
-arrange <- function(..., as.table=FALSE, plot=TRUE, clip=TRUE,
-                    main=NULL, sub=NULL, left=NULL, legend=NULL, newpage=FALSE) {
+arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
+                    main=NULL, sub=NULL, left=NULL, legend=NULL) {
 
   
   if(is.null(main)) main <- nullGrob()
@@ -139,11 +138,16 @@ arrange <- function(..., as.table=FALSE, plot=TRUE, clip=TRUE,
   af <- placeGrob(af, left, row=2, col=1)
   af <- placeGrob(af, legend, row=2, col=3)
   
-  if(plot){
-    if(newpage) grid.newpage()
-    grid.draw(af)
-  }
+ 
   invisible(af)
+}
+
+grid.arrange <- function(..., as.table=FALSE, clip=TRUE,
+                    main=NULL, sub=NULL, left=NULL, legend=NULL,
+					newpage=TRUE){
+    if(newpage) grid.newpage()
+    grid.draw(arrangeGrob(...,as.table=as.table, clip=clip,
+	                    main=main, sub=sub, left=left, legend=legend))
 }
 
 latticeGrob <- function(p, ...){

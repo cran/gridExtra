@@ -8,14 +8,17 @@
 ##' @param angle numeric: angle in degrees
 ##' @param ... optional grob parameters,  passed to imageGrob or rasterGrob
 ##' @details Very primitive function,  using RGraphics' imageGrob or rasterGrob (R>2.11)
-##' @return a gTree of class 'ebimage'
+##' @return a gTree of class 'ebimage', with natural width and height in points
+##' 
 ##' @examples
+##' \dontrun{
 ##' library(EBImage)
 ##' library(RGraphics)
 ##'  x <- readImage("http://www.google.com/logos/teachersday09.gif")
 ##' g1 <- ebimageGrob(x)
-##' dev.new(width=g1$width, height=g1$height) 
-##' grid.draw(g1)
+##' dev.new(width=g1$width/72, height=g1$height/72) 
+##' grid.draw(g1) 
+##' }
 
 ebimageGrob <- 
 function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle = NULL, ...) 
@@ -39,8 +42,9 @@ function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle = NULL, ...)
       imageGrob(dims[2], dims[1], col=colours, gp=gpar(col=colours), by=FALSE, vp=vp, ...)
   }
   
-  gTree(width= convertUnit(width, "in", val=TRUE),
-        height=convertUnit(height, "in", val=TRUE),
+  gTree(width= width[[1]],
+        height = height[[1]], 
         children=gList(child), cl="ebimage")
   
 }
+

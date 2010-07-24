@@ -1,5 +1,6 @@
 ##' zero grob borrowed from ggplot2
 ##'
+##' 
 ##' @aliases virtualGrob grobHeight.virtual grobWidth.virtual drawDetails.virtual is.zero widthDetails.virtual heightDetails.virtual
 ##' @title virtualGrob
 
@@ -18,7 +19,8 @@ drawDetails.virtual <- function(x, recording) {}
 ##' @param y vector
 ##' @param n integer  
 ##' @return a vector
-##' @seealso \code{rep}, \code{ggplot2:interleave} 
+##' @seealso \code{rep}, \code{ggplot2:interleave}
+##' 
 ##' @examples
 ##' interleaven(replicate(3, rectGrob(), simplify=FALSE), replicate(12, virtualGrob, simplify=FALSE), 4)
 
@@ -31,6 +33,7 @@ c(x, y)[ord]
 ##'
 ##' @aliases rowMax.units, colMax.units 
 ##' @title rowMax.units
+##' 
 ##' @param u list of units
 ##' @param nrow nrow
 ##' @return a vector of units
@@ -52,6 +55,7 @@ colMax.units <- function(u, ncol){ # colMax with a fake matrix of units
 
 
 ##' expand a list of arguments to full length (and misc. undocumented functions)
+##'
 ##' 
 ##' @aliases updatelist textii rectii pchlist
 ##' @param ... arguments

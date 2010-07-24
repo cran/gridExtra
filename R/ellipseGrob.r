@@ -11,6 +11,7 @@
 ##' @param default.units default units
 ##' @param size.units size units
 ##' @return grob
+##' 
 ##' @examples
 ##' g = ellipseGrob(1:10/11,1:10/11,size=5,ar=1:5,angle=rnorm(10),
 ##'                 def="npc", gp=gpar(fill=grey(1:10/11)))
