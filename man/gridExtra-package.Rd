@@ -6,7 +6,7 @@
 \details{\tabular{ll}{
 Package: \tab gridExtra\cr
 Type: \tab Package\cr
-Version: \tab 0.6.5\cr
+Version: \tab 0.7\cr
 Date: \tab 2009-08-17\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab false\cr
