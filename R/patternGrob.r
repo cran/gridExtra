@@ -18,6 +18,8 @@
 ##' @param gp gp 
 ##' @param ... additional params to the grob
 ##' @return grob of class pattern
+##' @export
+##' @family grob userlevel
 ##' 
 ##' @examples
 ##' grid.pattern(x=seq(1/6, 5/6, length=6), width=unit(1/8,"npc"), height=unit(0.5,"npc"),
@@ -54,7 +56,9 @@ patternGrob <- function(x=unit(0.5, "npc"), y=unit(0.5, "npc"),
     
   }
 
+##' @export
 widthDetails.pattern <- function(x) x$width
+##' @export
 heightDetails.pattern <- function(x) x$height
 
 
@@ -89,13 +93,14 @@ segments.pattern <- function(width, height,
 
 
 
+##' @export
 drawDetails.pattern <- function(x, recording=TRUE){
   
   ##   calculate the number of tiles
   
-  abs.size <- list(width=convertUnit(x$width, "mm", val=TRUE),
-                   height=convertUnit(x$height, "mm", axisFrom = "y",  val=TRUE),
-                   motif.size=convertUnit(x$granularity, "mm", value=TRUE))
+  abs.size <- list(width=convertUnit(x$width, "mm", valueOnly=TRUE),
+                   height=convertUnit(x$height, "mm", axisFrom = "y",  valueOnly=TRUE),
+                   motif.size=convertUnit(x$granularity, "mm", valueOnly=TRUE))
   
   abs.size$pattern.offset <- with(abs.size, rep(x$pattern.offset*motif.size, 2))
     
@@ -174,6 +179,7 @@ drawDetails.pattern <- function(x, recording=TRUE){
 }
 
 
+##' @export
 grid.pattern <- function(...)
   grid.draw(patternGrob(...))
 

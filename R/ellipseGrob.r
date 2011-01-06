@@ -11,6 +11,8 @@
 ##' @param default.units default units
 ##' @param size.units size units
 ##' @return grob
+##' @export
+##' @family grob userlevel
 ##' 
 ##' @examples
 ##' g = ellipseGrob(1:10/11,1:10/11,size=5,ar=1:5,angle=rnorm(10),
@@ -59,6 +61,7 @@ ellipseGrob <- function(x, y, size = 1, angle=rep(pi/2, length(x)),
 
 
 
+##' @export
 grid.ellipse <- function(...)
   {
     grid.draw(ellipseGrob(...))

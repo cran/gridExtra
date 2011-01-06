@@ -12,6 +12,9 @@
 ##' @param units.size units.size
 ##' @param gp gpar
 ##' @return grob
+##' @include polygon.regular.r
+##' @export
+##' @family grob userlevel
 ##' 
 ##' @examples
 #' pushViewport(dataViewport(0:1, 0:1, width=unit(2, "cm"), height=unit(2, "cm")))
@@ -56,6 +59,7 @@ ngonGrob <- function (x, y, sides = 5, size = 1,
               gp = gp)
 }
 
+##' @export
 grid.ngon <- function(...)
   {
     grid.draw(ngonGrob(...))

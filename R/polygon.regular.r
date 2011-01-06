@@ -6,8 +6,6 @@
 ##' @param ang numeric angle
 ##' @param ... unused
 ##' @return a data.frame
-##' @seealso \code{polygon.regular}
-##' 
 ##' @examples
 ##' polygon2(5)
 
@@ -16,6 +14,7 @@ polygon1 <- function(n=5, ang=0,...) { # inspired from a post by Greg Snow on r-
                cbind( cumsum(cos(theta)/2), cumsum(sin(theta)/2) )
 }
 
+##' @export
 polygon2 <- function(n=5, ang=0, x=0, y=0, rotateFromOrigin=FALSE){
                      # inspired from a post by William Dunlap on r-help (10/09/09)
 if(n<3) stop("n must be more than 3!")
@@ -35,18 +34,17 @@ if(rotateFromOrigin)
 
 
 
-#' compute vertices of a starred polygon
-#'
-#' @aliases polygon.star
-#' @title polygon.star
-#' @param n int
-#' @param adj numeric angle
-#' @param r radius
-#' @return a data.frame
-#' @seealso \code{polygon.regular}
-##' 
-#' @examples
-#' polygon.star(5)
+##' compute vertices of a starred polygon
+##'
+##' @aliases polygon.star
+##' @title polygon.star
+##' @param n int
+##' @param adj numeric angle
+##' @param r radius
+##' @return a data.frame
+##' @export
+##' @examples
+##' polygon.star(5)
 
 polygon.star <- function(n=4, adj=pi/2, r=1){
 
@@ -97,10 +95,9 @@ polygon.star <- function(n=4, adj=pi/2, r=1){
 #' @return a data.frame
 #' @seealso \code{star}
 #' @references ngon from the 'maptree' package
-##' 
+##' @export
 #' @examples
 #' polygon.regular(5)
-
 
 polygon.regular <- function (sides=4, scale.area=TRUE, star=FALSE) { 
 

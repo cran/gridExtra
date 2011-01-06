@@ -208,6 +208,8 @@ arrangeTableGrobs <- function(lgt, lgf, nrow, ncol, widths, heights,
 ##' @param theme theme (list of aesthetic elements)
 ##' @param ... passed to grob
 ##' @return a grob of class table
+##' @family grob userlevel
+##' @export
 ##' 
 ##' @examples
 ##' grid.table(head(iris), h.even.alpha=1, h.odd.alpha=1,  v.even.alpha=0.5, v.odd.alpha=1)
@@ -293,10 +295,12 @@ tableGrob <- function(d, rows=rownames(d), cols=colnames(d), parse=FALSE,
 }
         
 
+##' @export
 grid.table <- function(...)
   grid.draw(tableGrob(...))
 
 
+##' @export
 drawDetails.table <- function(x, recording=TRUE){
   
   lg <- with(x, makeTableGrobs(as.character(as.matrix(d)), rows, cols,
@@ -322,7 +326,7 @@ drawDetails.table <- function(x, recording=TRUE){
   heights <- unit(heightsv, "mm")
   
   cells = viewport(name="table.cells", layout =
-    grid.layout(lg$nrow+1, lg$ncol+1, width=widths, height=heights) )
+    grid.layout(lg$nrow+1, lg$ncol+1, widths=widths, heights=heights) )
   
   pushViewport(cells)
   tg <- arrangeTableGrobs(lg$lgt, lg$lgf, lg$nrow, lg$ncol, lg$widths, lg$heights,
@@ -333,6 +337,8 @@ drawDetails.table <- function(x, recording=TRUE){
                           show.namesep=x$show.namesep, show.csep=x$show.csep, show.rsep=x$show.rsep)
   upViewport()
 }
+
+##' @export
 widthDetails.table <- function(x){
   lg <- x$lg
   widthsv <- convertUnit(lg$widths + x$padding.h, "mm", valueOnly=TRUE)
@@ -342,6 +348,7 @@ widthDetails.table <- function(x){
   sum(widths)
 }
 
+##' @export
 heightDetails.table <- function(x){
   lg <- x$lg
   heightsv <- convertUnit(lg$heights + x$padding.v, "mm", valueOnly=TRUE)
@@ -358,6 +365,7 @@ heightDetails.table <- function(x){
 ##' @title theme
 ##' @param ... optional params to overwrite the theme defaults
 ##' @return theme
+##' @export
 theme.default <- theme.grey <- function(...)
   modifyList(list(show.rownames=TRUE, show.colnames=TRUE,
      row.just="center", col.just="center", core.just="center", 
@@ -376,15 +384,18 @@ theme.default <- theme.grey <- function(...)
      gpar.colfill = gpar(fill = "grey90", col="white")), list(...))
 
 
+##' @export
 theme.list <- function(...)
   modifyList(
-             theme.default(show.rownames=FALSE, show.colnames=FALSE,separator=NA,
+             theme.default(show.rownames=FALSE, show.colnames=FALSE, separator=NA,
                            core.just="left", gpar.corefill=gpar(col=NA),
                            show.csep=FALSE, show.rsep=FALSE,
                            gpar.corefill = gpar(fill = NA, col=NA), 
                            gpar.rowfill = gpar(fill = NA, col=NA), 
                            gpar.colfill = gpar(fill = NA, col=NA)), list(...))
 
+
+##' @export
 theme.black <- function(...)
   modifyList(
              theme.default(show.rownames=TRUE, show.colnames=TRUE,
@@ -398,6 +409,7 @@ theme.black <- function(...)
                            gpar.rowfill = gpar(fill = "black", col=NA), 
                            gpar.colfill = gpar(fill = "black", col=NA)), list(...))
 
+##' @export
 theme.blank <- function(...)
   modifyList(
              theme.default(show.rownames=TRUE, show.colnames=TRUE,
@@ -408,6 +420,7 @@ theme.blank <- function(...)
                            gpar.colfill = gpar(fill = NA, col=NA)), list(...))
 
 
+##' @export
 theme.vertical <- function(...)
   modifyList(
              theme.default(show.rownames=FALSE, show.colnames=TRUE,
@@ -425,6 +438,7 @@ theme.vertical <- function(...)
                            gpar.colfill = gpar(fill = "grey90", col=NA)), list(...))
 
 
+##' @export
 theme.white <- function(...)
   modifyList(
              theme.default(show.rownames=FALSE, show.colnames=TRUE,
