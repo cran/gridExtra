@@ -55,7 +55,7 @@ as.raster.pixmapRGB <- function(x) {
 
 ##' read tiff files with pixmap
 ##' 
-##' @aliases as.raster.pixmapRGB
+##' @aliases as.raster.pixmapRGB read.tiff
 ##' @param con connection
 ##' @param ... unused
 ##' @return ...
