@@ -8,6 +8,7 @@
 ##' @param pch vector of symbol types
 ##' @param space numeric scaling factor for the exclusion zone (see Details)
 ##' @param only.lines logical: should only split lines be returned?
+##' @param arrow arrow passed to grid.segments
 ##' @param gp gpar() object for the symbols
 ##' @param name grob name
 ##' @param default.units default units
@@ -41,7 +42,7 @@
 
 barbedGrob <- function(x = stats::runif(10), y = stats::runif(10), 
                        size = unit(sample(1:4, 10, repl=TRUE), "char"), 
-                       pch = 21, 
+                       pch = 21, arrow=NULL,
                        space=1, only.lines=FALSE, 
                        gp = gpar(), 
                        name=NULL, default.units = "npc", vp = NULL){
@@ -85,7 +86,7 @@ barbedGrob <- function(x = stats::runif(10), y = stats::runif(10),
   
 	
   grob.lines <- segmentsGrob(x0 = x.start, y0 = y.start,
-                             x1 = x.end, y1=y.end,
+                             x1 = x.end, y1=y.end, arrow=arrow,
                              default.units=default.units,
                              gp = gpar(lineend = "butt"), name = "lines")
   

@@ -40,6 +40,23 @@
 ##'         left = "This is my global Y-axis title")
 ##' 
 ##' }
+##' ## split figures into multiple pages with 2x2 layout
+##' 
+##'  plots = llply(1:12, function(.x) qplot(1:10,rnorm(10), main=paste("plot",.x)))
+##'  
+##'  params <- list(nrow=1, ncol=2)
+##'  
+##'  n <- do.call(prod, params)
+##'  pages <- length(plots) %/% n
+##'
+##'  groups <- split(seq_along(plots), gl(pages + as.logical(length(plots) %% n), n, length(plots)))
+##'
+##'  print(groups)
+##'  for (g in groups){
+##'    dev.new()
+##'    do.call(grid.arrange, c(plots[g], params))
+##'  }
+
 
 arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
                     main=NULL, sub=NULL, left=NULL, legend=NULL) {
@@ -130,12 +147,12 @@ arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
   ## optional annotations in a frame grob
   wl <- unit(1, "grobwidth", left) 
   wr <- unit(1, "grobwidth", legend)
-  ht <- unit(1, "grobheight", sub)
-  hb <- unit(1, "grobheight", main)
+  hb <- unit(1, "grobheight", sub)
+  ht <- unit(1, "grobheight", main)
   
   annotate.lay <- grid.layout(3, 3,
                               widths=unit.c(wl, unit(1, "npc")-wl-wr, wr),
-                              heights=unit.c(hb, unit(1, "npc")-hb-ht, ht))
+                              heights=unit.c(ht, unit(1, "npc")-hb-ht, hb))
   
   af <- frameGrob(layout=annotate.lay)
   
