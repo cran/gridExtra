@@ -1,12 +1,13 @@
 \name{stextGrob}
-\alias{stextGrob}
 \alias{grid.stext}
+\alias{stextGrob}
 \title{stextGrob}
 \usage{
-  stextGrob(label, r = 0.1, x = unit(0.5, "npc"), y =
-  unit(0.5, "npc"), just = "centre", hjust = NULL, vjust =
-  NULL, rot = 0, check.overlap = FALSE, default.units =
-  "npc", name = NULL, gp = gpar(), vp = NULL)
+  stextGrob(label, r = 0.1, x = unit(0.5, "npc"),
+    y = unit(0.5, "npc"), just = "centre", hjust = NULL,
+    vjust = NULL, rot = 0, check.overlap = FALSE,
+    default.units = "npc", name = NULL, gp = gpar(),
+    vp = NULL)
 }
 \arguments{
   \item{label}{see textGrob}
@@ -46,9 +47,18 @@
 }
 \examples{
 grid.rect(gp=gpar(fill="grey"))
-stextGrob("test")
+grid.stext("test")
 }
 \author{
   Baptiste Auguie
+}
+\seealso{
+  Other grob userlevel: \code{\link{arcTextGrob}},
+  \code{\link{barbedGrob}}, \code{\link{borderGrob}},
+  \code{\link{colorstripGrob}}, \code{\link{ebimageGrob}},
+  \code{\link{ellipseGrob}}, \code{\link{interleaven}},
+  \code{\link{ngonGrob}}, \code{\link{patternGrob}},
+  \code{\link{pixmapGrob}}, \code{\link{rpatternGrob}},
+  \code{\link{tableGrob}}, \code{\link{virtualGrob}}
 }
 

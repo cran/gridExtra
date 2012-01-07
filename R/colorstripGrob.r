@@ -9,13 +9,11 @@
 ##' @param raster logical,  use grid.raster (with interpolation)
 ##' @return a grob
 ##' @seealso \code{grid.rect}
+##' @family grob userlevel
+##' @export
 ##' 
 ##' @examples
-##' colorstripGrob()
-##' \dontrun{
-##' require(RColorBrewer)
-##' colorstripGrob(brewer.pal(3, "Set1"))
-##' }
+##' colorstripGrob(c("#E41A1C", "#377EB8", "#4DAF4A"))
 
 colorstripGrob <- 
   function (fill = 1:3, colour = fill, draw = TRUE, raster = FALSE,
@@ -62,6 +60,7 @@ colorstripGrob <-
   my.grob
 }
 
+##' @export
 grid.colorstrip <- function(...)
   grid.draw(colorstripGrob(...))
 

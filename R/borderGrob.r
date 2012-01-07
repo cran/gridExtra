@@ -8,6 +8,8 @@
 ##' @param vp viewport
 ##' @return a grob
 ##' @seealso \code{grid.segments}, \code{grid.points}
+##' @family grob userlevel
+##' @export
 ##' 
 ##' @examples
 ##' pushViewport(viewport(width=0.5, height=0.5, layout=grid.layout(4, 4, w=0.9, height=0.9)))
@@ -38,6 +40,7 @@ segmentsGrob(xs, ys, xe, ye, gp=gpar(col=cols[type, ], ...), vp=vp)
   
 }
 
+##' @export
 grid.border <- function(...){
   grid.draw(borderGrob(...))
 }

@@ -21,6 +21,8 @@ tile.motif <- function(m, nx=10, ny=nx){
 ##' @param gp gp 
 ##' @param ... additional params passed to the grob
 ##' @return grob of class rpattern
+##' @family grob userlevel
+##' @export
 ##' 
 ##' @examples
 ##' .lines45 <- matrix("white", ncol=100, nrow=100)
@@ -41,16 +43,19 @@ rpatternGrob <- function(x=unit(0.5, "npc"), y=unit(0.5, "npc"),
          motif.height=motif.height, clip=clip, gp=gp, ..., cl="rpattern")
   }
 
+##' @export
 widthDetails.rpattern <- function(x) x$width
+##' @export
 heightDetails.rpattern <- function(x) x$height
 
+##' @export
 drawDetails.rpattern <- function(x, recording=TRUE){
 
 ##   calculate the number of tiles
-  nx <- ceiling(convertUnit(x$width, "in", value=TRUE) /
-                convertUnit(x$motif.width, "in", value=TRUE)) + 1
-  ny <- ceiling(convertUnit(x$height, "in", axisFrom = "y", value=TRUE) /
-                convertUnit(x$motif.height, "in", axisFrom = "y", value=TRUE)) + 1
+  nx <- ceiling(convertUnit(x$width, "in", valueOnly=TRUE) /
+                convertUnit(x$motif.width, "in", valueOnly=TRUE)) + 1
+  ny <- ceiling(convertUnit(x$height, "in", axisFrom = "y", valueOnly=TRUE) /
+                convertUnit(x$motif.height, "in", axisFrom = "y", valueOnly=TRUE)) + 1
 
 ##   clip the raster
   pushViewport(viewport(x=x$x, y=x$y,
@@ -68,5 +73,6 @@ drawDetails.rpattern <- function(x, recording=TRUE){
 
 
 
+##' @export
 grid.rpattern <- function(...)
   grid.draw(rpatternGrob(...))

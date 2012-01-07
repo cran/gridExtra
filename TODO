@@ -6,6 +6,10 @@ ENHANCEMENTS
 
 * tableGrob cannot be edited at low level (earlier versions could, but are incompatible with on-the-fly drawDetails method)
 
+* rewrite tableGrob using gtable
+
 NEW FEATURES
 
 * basic plots (image, plot, É) in grid, using scales and guide packages of Hadley W.
+
+* matrix plot

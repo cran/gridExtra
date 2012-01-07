@@ -3,6 +3,7 @@
 ##'
 ##' adds a blurred white version of a label below the text
 ##' @title stextGrob
+##' @aliases stextGrob grid.stext
 ##' @param label see textGrob
 ##' @param r blur radius
 ##' @param x see textGrob
@@ -18,10 +19,11 @@
 ##' @param vp see textGrob
 ##' @return gTree
 ##' @author Baptiste Auguie
+##' @family grob userlevel
 ##' @export
 ##' @examples
 ##' grid.rect(gp=gpar(fill="grey"))
-##' stextGrob("test")
+##' grid.stext("test")
 stextGrob <- function (label, r=0.1, x = unit(0.5, "npc"), y = unit(0.5, "npc"), 
                        just = "centre", hjust = NULL, vjust = NULL, rot = 0, check.overlap = FALSE, 
                        default.units = "npc", name = NULL, gp = gpar(), vp = NULL){

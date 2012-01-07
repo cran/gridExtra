@@ -9,6 +9,8 @@
 ##' @param ... optional grob parameters,  passed to imageGrob or rasterGrob
 ##' @details Very primitive function,  using RGraphics' imageGrob or rasterGrob (R>2.11)
 ##' @return a gTree of class 'ebimage', with natural width and height in points
+##' @family grob userlevel
+##' @export
 ##' 
 ##' @examples
 ##' \dontrun{
@@ -39,7 +41,7 @@ function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle = NULL, ...)
   colours <- colours[ rev(seq_len(nrow(colours))), ]
     require(RGraphics)
     child <- 
-      imageGrob(dims[2], dims[1], col=colours, gp=gpar(col=colours), by=FALSE, vp=vp, ...)
+      imageGrob(dims[2], dims[1], cols=colours, gp=gpar(col=colours), byrow=FALSE, vp=vp, ...)
   }
   
   gTree(width= width[[1]],

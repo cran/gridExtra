@@ -10,56 +10,22 @@
 ##' @param as.table logical: bottom-left to top-right or top-left to bottom-right
 ##' @param clip logical: clip every object to its viewport
 ##' @return return a frame grob; side-effect (plotting) if plot=T
-##' @seealso \code{grid.layout}
+##' @export
 ##' 
 ##' @examples
 ##' \dontrun{
 ##' require(ggplot2)
-##' plots = lapply(1:5, function(.x) qplot(1:10,rnorm(10),main=paste("plot",.x)))
+##' plots = lapply(1:5, function(.x) qplot(1:10,rnorm(10), main=paste("plot",.x)))
 ##' require(gridExtra)
 ##' do.call(grid.arrange,  plots)
 ##' require(lattice)
-##' grid.arrange(qplot(1:10), xyplot(1:10~1:10), tableGrob(head(iris)), nrow=2, as.table=TRUE, main="test main", sub=textGrob("test sub", gp=gpar(font=2)))
-##' 
-##' ## adding a common legend
-##' library(ggplot2)
-##' dsamp <- diamonds[sample(nrow(diamonds), 1000), ] 
-##' 
-##' p1 <- qplot(carat, price, data=dsamp, colour=clarity)
-##' p2 <- qplot(carat, price, data=dsamp, colour=clarity, geom="path")
-##' 
-##' leg <- ggplotGrob(p1 + opts(keep="legend_box"))
-##' ## one needs to provide the legend with a well-defined width
-##' legend=gTree(children=gList(leg), cl="legendGrob")
-##' widthDetails.legendGrob <- function(x) unit(2, "cm")
-##' 
-##' grid.arrange(p1 + opts(legend.position="none"),
-##'         p2 + opts(legend.position="none"),
-##'         legend=legend,
-##'         main ="this is a title",
-##'         left = "This is my global Y-axis title")
-##' 
+##' grid.arrange(qplot(1:10), xyplot(1:10~1:10),
+##' tableGrob(head(iris)), nrow=2, as.table=TRUE, main="test main",
+##' sub=textGrob("test sub", gp=gpar(font=2)))
 ##' }
-##' ## split figures into multiple pages with 2x2 layout
-##' 
-##'  plots = llply(1:12, function(.x) qplot(1:10,rnorm(10), main=paste("plot",.x)))
-##'  
-##'  params <- list(nrow=1, ncol=2)
-##'  
-##'  n <- do.call(prod, params)
-##'  pages <- length(plots) %/% n
-##'
-##'  groups <- split(seq_along(plots), gl(pages + as.logical(length(plots) %% n), n, length(plots)))
-##'
-##'  print(groups)
-##'  for (g in groups){
-##'    dev.new()
-##'    do.call(grid.arrange, c(plots[g], params))
-##'  }
-
-
 arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
-                    main=NULL, sub=NULL, left=NULL, legend=NULL) {
+                        main=NULL, sub=NULL, left=NULL,
+                        legend=NULL) {
 
   
   if(is.null(main)) main <- nullGrob()
@@ -94,7 +60,7 @@ arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
   if(is.null(params.layout$nrow) & is.null(params.layout$ncol)) 
     {
       params.layout$nrow = nm[1]
-     params.layout$ncol = nm[2]
+      params.layout$ncol = nm[2]
     }
   if(is.null(params.layout$nrow))
     params.layout$nrow = ceiling(n/params.layout$ncol)
@@ -103,12 +69,7 @@ arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
   
   nrow <- params.layout$nrow 
   ncol <- params.layout$ncol
-  
-  
-  params.layout$nrow <- params.layout$nrow 
-  params.layout$ncol <- params.layout$ncol 
-  
-  
+
   lay <- do.call(grid.layout, params.layout)
   
   fg <- frameGrob(layout=lay)
@@ -166,6 +127,7 @@ arrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
   invisible(gTree(children=gList(af), cl=arrange.class))
 }
 
+##' @export
 grid.arrange <- function(..., as.table=FALSE, clip=TRUE,
                     main=NULL, sub=NULL, left=NULL, legend=NULL,
 					newpage=TRUE){
@@ -174,16 +136,111 @@ grid.arrange <- function(..., as.table=FALSE, clip=TRUE,
 	                    main=main, sub=sub, left=left, legend=legend))
 }
 
+##' @export
 latticeGrob <- function(p, ...){
  grob(p=p, ..., cl="lattice")
 }
 
+##' @export
 drawDetails.lattice <- function(x, recording=FALSE){
   lattice:::plot.trellis(x$p, newpage=FALSE)
 }
 
-
+##' @export
 print.arrange <- function(x, newpage = is.null(vp), vp = NULL, ...) {
   if(newpage) grid.newpage()
   grid.draw(editGrob(x, vp=vp))
 }
+
+##' Interface to arrangeGrob that can dispatch on multiple pages
+##'
+##' If the layout specifies both nrow and ncol, the list of grobs can be split
+##' in multiple pages. Interactive devices print open new windows, whilst non-interactive
+##' devices such as pdf call grid.newpage() between the drawings.
+##' @title marrangeGrob
+##' @aliases marrangeGrob print.arrangelist
+##' @param ... grobs
+##' @param as.table see \link{arrangeGrob}
+##' @param clip see \link{arrangeGrob}
+##' @param top see \link{arrangeGrob}
+##' @param bottom see \link{arrangeGrob}
+##' @param left see \link{arrangeGrob}
+##' @param right see \link{arrangeGrob}
+##' @return a list of class arrangelist
+##' @author baptiste Auguie
+##' @export
+##' @family user
+##' @examples
+##' \dontrun{ 
+##' require(ggplot2)
+##' pl <- lapply(1:11, function(.x) qplot(1:10,rnorm(10), main=paste("plot",.x)))
+##' ml <- do.call(marrangeGrob, c(pl, list(nrow=2, ncol=2)))
+##' ## interactive use; open new devices
+##' ml
+##' ## non-interactive use, multipage pdf
+##' ggsave("multipage.pdf", ml)
+##' }
+marrangeGrob <- function(..., as.table=FALSE, clip=TRUE,
+                         top=quote(paste("page", g, "of", pages)),
+                         bottom=NULL, left=NULL, right=NULL){
+   
+  arrange.class <- "arrange" # grob class
+  
+  dots <- list(...)
+  
+  params <- c("nrow", "ncol", "widths", "heights",
+              "default.units", "respect", "just" )
+  ## names(formals(grid.layout))
+  layout.call <- intersect(names(dots), params)
+  params.layout <- dots[layout.call]
+  if(is.null(names(dots)))
+    not.grobnames <- FALSE else
+  not.grobnames <- names(dots) %in% layout.call
+  
+  grobs <- dots[! not.grobnames ]
+  
+  n <- length(grobs)
+  
+  nm <- n2mfrow(n)
+  
+  if(is.null(params.layout$nrow) & is.null(params.layout$ncol)) 
+    {
+      params.layout$nrow = nm[1]
+      params.layout$ncol = nm[2]
+    }
+  if(is.null(params.layout$nrow))
+    params.layout$nrow = ceiling(n/params.layout$ncol)
+  if(is.null(params.layout$ncol))
+    params.layout$ncol = ceiling(n/params.layout$nrow)
+  
+  nrow <- params.layout$nrow 
+  ncol <- params.layout$ncol
+  
+  ## if nrow and ncol were given, may need multiple pages
+  nlay <- with(params.layout, nrow*ncol)
+  
+  ## add one page if division is not complete
+  pages <- n %/% nlay + as.logical(n %% nlay)
+  
+  groups <- split(seq_along(grobs), 
+                  gl(pages, nlay, n))
+  
+  pl <-
+    lapply(names(groups), function(g)
+           {
+             top <- eval(top) ## lazy evaluation
+             do.call(arrangeGrob, c(grobs[groups[[g]]], params.layout, 
+                                    list(as.table=as.table, clip=clip,
+                                         main=top, sub=bottom, left=left, legend=right)))
+           })
+  
+  class(pl) <- c("arrangelist", "ggplot", class(pl))
+  pl
+  
+}
+
+##' @export
+print.arrangelist = function(x, ...) lapply(x, function(.x) {
+  if(dev.interactive()) dev.new() else grid.newpage()
+  grid.draw(.x)
+}, ...)

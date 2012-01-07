@@ -6,7 +6,7 @@
 ##' @param y coordinates
 ##' @param size unit vector for the symbols
 ##' @param pch vector of symbol types
-##' @param space numeric scaling factor for the exclusion zone (see Details)
+##' @param space numeric scaling factor for the exclusion zone
 ##' @param only.lines logical: should only split lines be returned?
 ##' @param arrow arrow passed to grid.segments
 ##' @param gp gpar() object for the symbols
@@ -14,9 +14,12 @@
 ##' @param default.units default units
 ##' @param vp viewport
 ##' @return a grob
+##' @export
 ##' @seealso \code{grid.segments}, \code{grid.points}
 ##' 
+##' @family grob userlevel
 ##' @examples
+##' set.seed(1234)
 ##' grid.barbed(name="test")
 ##' grid.edit("test", gp=gpar(fill="blue", lwd=3))
 ##' grid.edit("test::points", pch=22)
@@ -39,9 +42,8 @@
 ##' grid.draw(g)
 ##' grid.points(x, y, pch=3)
 
-
 barbedGrob <- function(x = stats::runif(10), y = stats::runif(10), 
-                       size = unit(sample(1:4, 10, repl=TRUE), "char"), 
+                       size = unit(sample(1:4, 10, replace=TRUE), "char"), 
                        pch = 21, arrow=NULL,
                        space=1, only.lines=FALSE, 
                        gp = gpar(), 
@@ -59,8 +61,8 @@ barbedGrob <- function(x = stats::runif(10), y = stats::runif(10),
   ## duplicate the points to make split segments
   new.x <- rep(x, each=2)[-c(1, 2*length(x))]
   new.y <- rep(y, each=2)[-c(1, 2*length(y))]
-  sizex <- convertUnit(size, default.units, 'x', "dimension",  value=TRUE)
-  sizey <- convertUnit(size, default.units, 'y', "dimension",  value=TRUE)
+  sizex <- convertUnit(size, default.units, 'x', "dimension",  valueOnly=TRUE)
+  sizey <- convertUnit(size, default.units, 'y', "dimension",  valueOnly=TRUE)
   
   new.sizex <- rep(sizex, each=2, length=2*n)[-c(1, 2*n)]
   new.sizey <- rep(sizey, each=2, length=2*n)[-c(1, 2*n)]
@@ -114,6 +116,7 @@ gTree(x = x, y = y, size = size,
 
 }
 
+##' @export
 grid.barbed <- function(...){
   g = barbedGrob(...)
   grid.draw(g)

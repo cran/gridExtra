@@ -9,6 +9,8 @@
 ##' @param gp gpar
 ##' @param ... additional params (unused)
 ##' @return grob
+##' @export
+##' @family grob userlevel
 ##' 
 ##' @examples
 ##' library(grid)
@@ -17,8 +19,8 @@
 ##' grid.arcText()
 
 arcTextGrob <- function(x=unit(0.5, "npc"), y=unit(0.5, "npc"),
-                        labels=library()$results[,1],
-                        links=sample(seq_along(labels), 50, rep=TRUE),
+                        labels=LETTERS,
+                        links=sample(seq_along(labels), 50, replace = TRUE),
                         default.units="npc",
                         gp=gpar(), ...)
   {
@@ -32,7 +34,7 @@ arcTextGrob <- function(x=unit(0.5, "npc"), y=unit(0.5, "npc"),
     n <- length(labels)
     ang <- seq(0, n-1) * 2 * pi/n
 
-    radius.npc <- convertUnit(radius, "npc", val=TRUE)
+    radius.npc <- convertUnit(radius, "npc", valueOnly=TRUE)
     coords <- data.frame(x=0.5+radius.npc*cos(ang), y=0.5+radius.npc*sin(ang))
     g2 <- textGrob(labels, x=coords$x , y=coords$y , rot=ang*180/pi, default.units="npc", hjust=0)
 
@@ -56,5 +58,6 @@ arcTextGrob <- function(x=unit(0.5, "npc"), y=unit(0.5, "npc"),
   }
 
 
+##' @export
 grid.arcText <- function(...)
   grid.draw(arcTextGrob(...))

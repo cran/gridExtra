@@ -1,14 +1,20 @@
 ##' zero grob borrowed from ggplot2
 ##'
-##' 
 ##' @aliases virtualGrob grobHeight.virtual grobWidth.virtual drawDetails.virtual is.zero widthDetails.virtual heightDetails.virtual
 ##' @title virtualGrob
+##' @export
+##' @family grob userlevel
 
 virtualGrob <- grob(cl = "virtual", name = "NULL")
-widthDetails.virtual <-
-heightDetails.virtual <- 
-grobWidth.virtual <- 
+##' @export
+widthDetails.virtual <-function(x) unit(0, "cm")
+##' @export
+heightDetails.virtual <- function(x) unit(0, "cm")
+##' @export
+grobWidth.virtual <- function(x) unit(0, "cm")
+##' @export
 grobHeight.virtual <- function(x) unit(0, "cm")
+##' @export
 drawDetails.virtual <- function(x, recording) {}
 
 ##' mix two vectors
@@ -20,6 +26,8 @@ drawDetails.virtual <- function(x, recording) {}
 ##' @param n integer  
 ##' @return a vector
 ##' @seealso \code{rep}, \code{ggplot2:interleave}
+##' @family grob userlevel
+##' @export
 ##' 
 ##' @examples
 ##' interleaven(replicate(3, rectGrob(), simplify=FALSE), replicate(12, virtualGrob, simplify=FALSE), 4)
@@ -33,10 +41,10 @@ c(x, y)[ord]
 ##'
 ##' @aliases rowMax.units colMax.units 
 ##' @title rowMax.units
-##' 
 ##' @param u list of units
 ##' @param nrow nrow
 ##' @return a vector of units
+##' @export
 ##' @seealso \code{unit.c}, \code{unit} 
 
 rowMax.units <- function(u, nrow){ # rowMax with a fake matrix of units
@@ -46,6 +54,7 @@ rowMax.units <- function(u, nrow){ # rowMax with a fake matrix of units
   }))
 }
 
+##' @export
 colMax.units <- function(u, ncol){ # colMax with a fake matrix of units
   matrix.indices <- matrix(seq_along(u), ncol=ncol)
   do.call(unit.c, lapply(seq(1, ncol), function(ii) {

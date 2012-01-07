@@ -10,7 +10,8 @@
 ##' @param ... optional grob parameters,  passed to imageGrob or rasterGrob
 ##' @details Very primitive function,  using RGraphics' imageGrob or rasterGrob (R>=2.11)
 ##' @return a gTree of class 'pixmap', with natural width and height in points
-##' 
+##' @family grob userlevel
+##' @export
 ##' @examples
 ##' library(pixmap)
 ##' library(RGraphics)
@@ -37,7 +38,7 @@ function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, vp=NULL, ...)
 
   } else {
      child <- 
-       imageGrob(nrow(Z), ncol(Z), col=pic@col[Z], gp=gpar(col=pic@col[Z]), by=FALSE, vp=vpc, ...)
+       imageGrob(nrow(Z), ncol(Z), cols=pic@col[Z], gp=gpar(col=pic@col[Z]), byrow=FALSE, vp=vpc, ...)
   }
  
   gTree(width= width[[1]],
@@ -46,6 +47,7 @@ function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, vp=NULL, ...)
   
 }
 
+##' @export
 as.raster.pixmapRGB <- function(x) {
     nr <- nrow(x@red)
     r <- rgb((x@red), (x@green), (x@blue))
@@ -59,8 +61,8 @@ as.raster.pixmapRGB <- function(x) {
 ##' @param con connection
 ##' @param ... unused
 ##' @return ...
-##' 
-##' 
+##' @family userlevel
+##' @export
 ## function obtained from Simon Urbanek
 ## to import tiff files in pixmap
 ## Thu Jun 5 16:15:40 CEST 2008            
