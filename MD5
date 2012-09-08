@@ -1,12 +1,12 @@
-c7749812f5d913711e8fb5ea2c2facd6 *DESCRIPTION
+e50d374543161056ff2c4cc963e8e871 *DESCRIPTION
 a510d4c7ba985cdf8bbca4a794c18c90 *NAMESPACE
 8dda6de8896909769c89947e81db028c *NEWS
 eddd2437925d368d65b945da079e9eea *R/arcText.r
-012b1778ce188b85d2cf3e28215f26cd *R/arrange.r
+e833e25e6cbcfc88147e3fe5100f0d23 *R/arrange.r
 27e64cbfdf81082869be2cfbc74a9819 *R/barbedGrob.r
 6f51476a46a01971c8a533b940d124e7 *R/borderGrob.r
 89e04a98f17707619d29a45fc11910e7 *R/colorstripGrob.r
-4a4ee5add51b3079775fbceff3e05afa *R/ebimage.r
+f7bde91d89f3c8e88da363cfaa76f528 *R/ebimage.r
 2a4376ab67f7d5a6b611252d1a046804 *R/ellipseGrob.r
 dfac18130b4e8e816509205b2904c260 *R/gridExtra-package.r
 fe48c518bbda9969a0bb6a4673156e96 *R/grob-utils.r
@@ -17,6 +17,7 @@ df389200a49c4e98c31fe1e2f05f5cf7 *R/pixmap.r
 2766c64e512512e793ec09ae5c0293f1 *R/rpattern.r
 3a90cd169a5fa71fd245ac7c5da32746 *R/stextGrob.r
 4609bee2bdd403f443db1a1b20dbfbd6 *R/tableGrob.r
+d41d8cd98f00b204e9800998ecf8427e *README
 2e30b1b53cae8f29aacd8ca8037706e3 *TODO
 fb4f9c1862a715ea12a0e398cd086d67 *inst/test/expressions.r
 ac6124e5cbaf4b2bf7684b9f49a1b7c0 *inst/test/tableGrob-grobnames.r
