@@ -1,66 +1,147 @@
-##' regular polygon grob
-##'
-##' @aliases ngonGrob grid.ngon
-##' @title ngonGrob
+##' @aliases ngonGrob grid.ngon ellipseGrob grid.ellipse
+##' @title Regular polygon grob
+##' @description Regular polygons with optional rotation, stretching, and aesthetic attributes
+##' @describeIn ngonGrob return a polygon grob  
 ##' @param x x unit
 ##' @param y y unit
-##' @param sides sides
-##' @param size size
-##' @param angle angle
-##' @param ar ar
-##' @param units.def units.def
-##' @param units.size units.size
+##' @param n number of vertices
+##' @param size radius of circumscribing circle
+##' @param phase angle in radians of first point relative to x axis
+##' @param rho aspect ratio
+##' @param angle angle of polygon in radians
+##' @param position.units default units for the positions
+##' @param size.units grid units for the sizes
 ##' @param gp gpar
+##' @param ... further parameters passed to polygonGrob
 ##' @return grob
-##' @include polygon.regular.r
 ##' @export
-##' @family grob userlevel
-##' 
 ##' @examples
-#' pushViewport(dataViewport(0:1, 0:1, width=unit(2, "cm"), height=unit(2, "cm")))
-#' 
-#' xy <- polygon.regular(6, TRUE)
-#' grid.ngon(0.5, 0.5, 6, 10, units.size="mm")
-#' for(ii in 1:NROW(xy)){
-#'  grid.ngon(xy[ii, 1]+0.5, xy[ii, 2]+0.5, 6, 10, units.size="mm")
-#' }
-#' upViewport()
-
-
-ngonGrob <- function (x, y, sides = 5, size = 1,
-                      angle = rep(pi/2, length(x)), 
-                      ar = rep(1, length(x)),
-                      gp = gpar(colour = "grey50", fill = "grey90", 
-                        linejoin = "mitre"),
-                      units.def = "native", units.size="mm") 
+##' library(grid)
+##' N <- 5
+##' xy <- polygon_regular(N)*2
+##' 
+##' # draw multiple polygons
+##' g <- ngonGrob(unit(xy[,1],"cm") + unit(0.5,"npc"), 
+##'               unit(xy[,2],"cm") + unit(0.5,"npc"),
+##'               n = seq_len(N) + 2, gp=gpar(fill=1:N))
+##' 
+##' grid.newpage()
+##' grid.draw(g)
+##' 
+##' # rotated and stretched
+##' g2 <- ngonGrob(unit(xy[,1],"cm") + unit(0.5,"npc"), 
+##'               unit(xy[,2],"cm") + unit(0.5,"npc"),
+##'               n = seq_len(N) + 2, rho = seq_len(N),
+##'               phase = 0, angle=pi/(seq_len(N)+2),
+##'               size=1:N+5)
+##' 
+##' grid.newpage()
+##' grid.draw(g2)
+##' 
+##' # ellipse
+##' g3 <- ellipseGrob(unit(xy[,1],"cm") + unit(0.5,"npc"), 
+##'                   unit(xy[,2],"cm") + unit(0.5,"npc"),
+##'                   angle=-2*seq(0,N-1)*pi/5+pi/2,
+##'                   size=5, rho=1/3)
+##' 
+##' grid.newpage()
+##' grid.draw(g3)
+ngonGrob <- function (x, y, n = 5, size = 5, phase = pi/2, 
+                      angle = 0, rho = 1,
+                      gp = gpar(colour = "black", fill = NA, 
+                                linejoin = "mitre"), ..., 
+                      position.units = "npc", size.units="mm") 
 {
-  stopifnot(length(y) == length(x))
-  n <- length(x)
-  if (length(size) < n) 
-    size <- rep(size, length.out = n)
-  if (length(sides) < n) 
-    sides <- rep(sides, length.out = n)
-  ngonC <- lapply(sides, polygon.regular)
-  ngonC.list <- lapply(seq_along(ngonC), function(ii) size[ii] * 
-                       ngonC[[ii]] %*%
-                       matrix(c(sqrt(ar[ii]), 0, 0, 1/sqrt(ar[ii])), ncol = 2) %*%
-                       matrix(c(cos(angle[ii]), -sin(angle[ii]), 
-                                sin(angle[ii]), cos(angle[ii])), nrow = 2))
-  vertices <- sapply(ngonC.list, nrow)
-  reps.x <- do.call(c, lapply(seq_along(x),
-                              function(ii) rep(x[ii], vertices[ii])))
-  reps.y <- do.call(c, lapply(seq_along(y),
-                              function(ii) rep(y[ii], vertices[ii])))
-  ngonXY <- do.call(rbind, ngonC.list)
+  N <- length(x)
+  stopifnot(length(y) == N)
   
-  polygonGrob(x = unit(ngonXY[, 1], units.size) + unit(reps.x, units.def), 
-              y = unit(ngonXY[, 2], units.size) + unit(reps.y, units.def), 
-              default.units = units.def, id.lengths = unlist(vertices), 
-              gp = gp)
+  if (!is.unit(x)) 
+    x <- unit(x, position.units)
+  if (!is.unit(y)) 
+    y <- unit(y, position.units)
+  
+  xv <- convertX(x, position.units, TRUE)
+  yv <- convertY(y, position.units, TRUE)
+  
+  if (length(n) < N) 
+    n <- rep(n, length.out = N)
+  if (length(size) < N) 
+    size <- rep(size, length.out = N)
+  if (length(phase) < N) 
+    phase <- rep(phase, length.out = N)
+  if (length(angle) < N) 
+    angle <- rep(angle, length.out = N)
+  if (length(rho) < N) 
+    rho <- rep(rho, length.out = N)
+  
+  lngon <- mapply(polygon_regular, n = n, phase = phase,
+                  SIMPLIFY = FALSE)
+  vertices <- sapply(lngon, nrow)
+  
+  # browser()
+  stretch_rotate_move <- function(p, size, rho, angle, x, y){
+    central <- size * p %*% 
+      diag(c(1/sqrt(rho), sqrt(rho))) %*%
+      rbind(c(cos(angle), -sin(angle)), 
+            c(sin(angle),  cos(angle)))
+    
+    list(x = unit(central[,1], size.units) + unit(x, position.units),
+         y = unit(central[,2], size.units) + unit(y, position.units))
+    
+  }
+  
+  lxy <- mapply(stretch_rotate_move, p=lngon,
+                size=size, rho=rho, angle=angle, 
+                x=xv, y=yv,
+                SIMPLIFY = FALSE)
+  
+  allx <- do.call("unit.c", lapply(lxy, "[[", 1))
+  ally <- do.call("unit.c", lapply(lxy, "[[", 2))
+  
+  polygonGrob(allx, ally, id.lengths = vertices, gp = gp, ...)
+  
 }
 
-##' @export
+
+#' @describeIn ngonGrob draw a polygon grob on the current device
+#' @inheritParams ngonGrob
+#' @export
 grid.ngon <- function(...)
-  {
-    grid.draw(ngonGrob(...))
-  }
+{
+  grid.draw(ngonGrob(...))
+}
+
+
+#' @describeIn ngonGrob return an ellipse grob
+#' @inheritParams ngonGrob
+#' @export
+ellipseGrob <- function(x, y, size = 5, 
+                        angle = pi/4, rho = 1, n = 50, 
+                        gp = gpar(colour = "black", fill = NA, 
+                                  linejoin = "mitre"), ..., 
+                        position.units = "npc", size.units="mm")  {
+  
+  ngonGrob(x, y, n = n , phase = 0, 
+           size = size, angle = angle, rho = rho,
+           gp = gp, position.units = position.units, 
+           size.units = size.units, ...)
+}
+
+
+#' @describeIn ngonGrob draw an ellipse grob
+#' @inheritParams ngonGrob
+#' @export
+grid.ellipse <- function(...)
+{
+  grid.draw(ellipseGrob(...))
+}
+
+
+#' @describeIn ngonGrob return the x,y coordinates of a regular polygon inscribed in the unit circle
+#' @inheritParams ngonGrob
+#' @export
+polygon_regular <- function(n = 5, phase = 0){
+  stopifnot(n > 2)
+  cc <- exp(seq(0, n)*2i*pi/n) * exp(1i*(phase+pi/2))
+  cbind(Re(cc), Im(cc))
+}
