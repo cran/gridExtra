@@ -9,13 +9,15 @@
 \title{Graphical display of a textual table}
 \usage{
 tableGrob(d, rows = rownames(d), cols = colnames(d),
-  theme = ttheme_default(), ...)
+  theme = ttheme_default(), vp = NULL, ...)
 
 grid.table(...)
 
-ttheme_default(...)
+ttheme_default(base_size = 12, base_colour = "black", parse = FALSE,
+  padding = unit(c(4, 4), "mm"), ...)
 
-ttheme_minimal(...)
+ttheme_minimal(base_size = 12, base_colour = "black", parse = FALSE,
+  padding = unit(c(4, 4), "mm"), ...)
 }
 \arguments{
 \item{d}{data.frame or matrix}
@@ -26,13 +28,23 @@ ttheme_minimal(...)
 
 \item{theme}{list of theme parameters}
 
+\item{vp}{optional viewport}
+
 \item{...}{further arguments to control the gtable}
+
+\item{base_size}{default font size}
+
+\item{base_colour}{default font colour}
+
+\item{parse}{logical, default behaviour for parsing text as plotmath}
+
+\item{padding}{length-2 unit vector specifying the horizontal and vertical padding of text within each cell}
 }
 \value{
-a gtable
+A gtable.
 }
 \description{
-Create a gtable containing text grobs representing a character matrix
+Create a gtable containing text grobs representing a character matrix.
 }
 \section{Functions}{
 \itemize{
