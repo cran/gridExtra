@@ -1,4 +1,4 @@
-#' @aliases grid.table tableGrob ttheme_default, ttheme_minimal
+#' @aliases grid.table tableGrob ttheme_default ttheme_minimal
 #' @title Graphical display of a textual table
 #' @describeIn tableGrob return a grob
 #' @description Create a gtable containing text grobs representing a character matrix.
@@ -35,7 +35,7 @@ tableGrob <- function(d, rows=rownames(d), cols=colnames(d),
                        fg_params = theme$colhead$fg_params, 
                        bg_params = theme$colhead$bg_params, 
                        padding=theme$colhead$padding)
-    g <- rbind_gtable(gc, g, "max")
+    g <- rbind_2(gc, g, "max")
   }
   if(!is.null(rows)){
     if(!is.null(cols)) # need to add dummy cell
@@ -46,7 +46,7 @@ tableGrob <- function(d, rows=rownames(d), cols=colnames(d),
                        fg_params = theme$rowhead$fg_params, 
                        bg_params = theme$rowhead$bg_params,
                        padding=theme$rowhead$padding)
-    g <- cbind_gtable(gr, g, "max")
+    g <- cbind_2(gr, g, "max")
   }
   
   colnames(g) <- paste0("c", seq_len(ncol(g)))
@@ -64,21 +64,23 @@ grid.table <- function(...)
 
 
 #' @describeIn tableGrob default theme for text tables
-#' @inheritParams tableGrob
 #' @param base_size default font size
 #' @param base_colour default font colour
+#' @param base_family default font family
 #' @param parse logical, default behaviour for parsing text as plotmath
 #' @param padding length-2 unit vector specifying the horizontal and vertical padding of text within each cell
 #' @importFrom utils modifyList
-##' @export
+#' @export
 ttheme_default <- function(base_size=12, 
                            base_colour="black", 
+                           base_family="",
                            parse=FALSE, 
                            padding = unit(c(4, 4), "mm"), ...){
   
   core <- list(fg_fun = text_grob, 
                fg_params = list(parse=parse, col=base_colour,
-                                fontsize = base_size),
+                                fontsize = base_size,
+                                fontfamily = base_family),
                bg_fun = rect_grob, 
                bg_params = list(fill = c("grey95","grey90"), 
                                 lwd=1.5, col="white"),
@@ -87,7 +89,8 @@ ttheme_default <- function(base_size=12,
   colhead <- list(fg_fun = text_grob, 
                   fg_params = list(parse=parse, col=base_colour,
                                    fontface=2L,
-                                   fontsize = base_size),
+                                   fontsize = base_size,
+                                   fontfamily = base_family),
                   bg_fun = rect_grob, 
                   bg_params = list(fill = c("grey80"), 
                                    lwd=1.5, col="white"),
@@ -97,6 +100,7 @@ ttheme_default <- function(base_size=12,
                   fg_params = list(parse=parse, col=base_colour,
                                    fontface=3L,
                                    fontsize = base_size,
+                                   fontfamily = base_family,
                                    hjust = 1, x = 0.95),
                   bg_fun = rect_grob, 
                   bg_params = list(fill=NA, lwd=1.5, col="white"),
@@ -114,17 +118,19 @@ ttheme_default <- function(base_size=12,
 
 
 #' @describeIn tableGrob minimalist theme for text tables
-#' @inheritParams tableGrob
+#' @inheritParams ttheme_default
 ##' @export
 ttheme_minimal <- function(base_size=12, 
                            base_colour = "black", 
+                           base_family = "",
                            parse=FALSE,
                            padding = unit(c(4, 4), "mm"),
                            ...){
   
   core <- list(fg_fun = text_grob, 
                fg_params = list(parse=parse, col=base_colour,
-                                fontsize = base_size),
+                                fontsize = base_size,
+                                fontfamily = base_family),
                bg_fun = rect_grob, 
                bg_params = list(fill = NA, col=NA),
                padding = padding)
@@ -132,7 +138,8 @@ ttheme_minimal <- function(base_size=12,
   colhead <- list(fg_fun = text_grob, 
                   fg_params = list(parse=parse, col=base_colour,
                                    fontface=2L,
-                                   fontsize = base_size),
+                                   fontsize = base_size,
+                                   fontfamily = base_family),
                   bg_fun = rect_grob, 
                   bg_params = list(fill = NA, col=NA),
                   padding = padding)
@@ -141,6 +148,7 @@ ttheme_minimal <- function(base_size=12,
                   fg_params = list(parse=parse, col=base_colour,
                                    fontface=3L,
                                    fontsize = base_size, 
+                                   fontfamily = base_family,
                                    hjust = 1, x = 0.95),
                   bg_fun = rect_grob, 
                   bg_params = list(fill=NA, col=NA),
@@ -156,59 +164,6 @@ ttheme_minimal <- function(base_size=12,
   
 }
 
-text_grob <- function(label, 
-                      parse=FALSE, 
-                      col = "black",
-                      fontsize = 12, 
-                      cex = 1, 
-                      fontfamily = "",
-                      fontface = 1L,
-                      lineheight = 1.2, 
-                      alpha = 1, 
-                      rot = 0,
-                      just = "centre",
-                      hjust = 0.5,
-                      vjust = 0.5, 
-                      x = 0.5, 
-                      y = 0.5){
-  if(parse){
-    label <- tryCatch(parse(text=label), 
-                      error = function(e) label)
-  }
-  textGrob(label = label, x = x, y = y, 
-           just = just, hjust = hjust, vjust = vjust, 
-           rot = rot, 
-           gp = gpar(col = col, 
-                     fontsize = fontsize, 
-                     cex = cex, 
-                     fontfamily = fontfamily,
-                     fontface = fontface,
-                     lineheight = lineheight, 
-                     alpha = alpha))
-}
-
-
-rect_grob <- function(fill = "white", 
-                      col = "black", 
-                      lty = "solid", 
-                      lwd = 1, cex = 1, 
-                      alpha = 1, 
-                      lineend = "round", 
-                      linejoin = "round", 
-                      linemitre = 10, lex = 1){
-  
-  rectGrob(width = unit(1,"npc") - unit(2, "scaledpts"), 
-           height = unit(1,"npc") - unit(2, "scaledpts"),
-           gp = gpar(col = col, 
-                     fill = fill, 
-                     lty = lty, 
-                     lwd = lwd, cex = cex, 
-                     alpha = alpha, 
-                     lineend = lineend, 
-                     linejoin = linejoin, 
-                     linemitre = linemitre, lex = lex,
-                     alpha = alpha))
-}
 
 
 ##
